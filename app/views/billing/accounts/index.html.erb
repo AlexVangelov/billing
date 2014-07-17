@@ -1,0 +1,7 @@
+<h1>Accounts#index</h1>
+<p>Find me in app/views/billing/accounts/index.html.erb</p>
+<%= link_to :new, new_account_path %>
+<hr />
+<% @accounts.each do |account| %>
+  <%= link_to account.inspect, account %>
+<% end %>

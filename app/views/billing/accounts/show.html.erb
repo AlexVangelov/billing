@@ -1,0 +1,19 @@
+<%= @account.inspect %>
+<hr />
+Charges:<br />
+<% @account.charges.each do |charge| %>
+  <%= charge.inspect %>
+<% end %>
+<%= link_to :charge, [:new, @account, :charge] %>
+<hr />
+Discounts:<br />
+<% @account.discounts.each do |discount| %>
+  <%= discount.inspect %>
+<% end %>
+<%= link_to :discount, [:new, @account, :discount] %>
+<hr />
+Payments:<br />
+<% @account.payments.each do |payment| %>
+  <%= payment.inspect %>
+<% end %>
+<%= link_to :pay, [:new, @account, :payment] %>
