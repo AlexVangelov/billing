@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = Billing::VERSION
   s.authors     = ["Alex Vangelov"]
   s.email       = ["email@data.bg"]
-  s.homepage    = "N/A"
+  s.homepage    = "http://extface.com"
   s.summary     = "Billing for rails 4 app"
   s.description = "Provides billing accounts for an ActiveRecord model"
   s.license     = "MIT"
