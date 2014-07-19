@@ -6,6 +6,10 @@
 #
 one:
   account: one
+  price_cents: 100
+  price_currency: USD
  
 two:
   account: one
+  price_cents: 200
+  price_currency: USD

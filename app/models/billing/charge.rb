@@ -8,8 +8,8 @@ module Billing
     validates_presence_of :price
     
     class << self
-      def args_to_attributes(*args)
-        if args.first.is_a? Hash
+      def args(*args)
+        case when args.blank? || args.first.is_a?(Hash) then
           {}.merge(*args)
         else
           h = { price: args.shift.to_money }

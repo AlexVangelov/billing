@@ -7,27 +7,26 @@ module Billing
     
     validate :percent_or_value
     
-    class << self
-      def args_to_attributes(*args)
-        case args.first.class
-        when Hash then
-          {}.merge(*args)
-        when String then
-          d = args.shift
-          if d.index('%')
-            
-          end
-        else
-          h = { price: args.shift.to_money }
-          args.any? ? h.merge(*args) : h
-        end
-      end
-    end
-    
     private
       def percent_or_value
         errors.add :percent_or_value, I18n.t('errors.messages.blank') if percent_ratio.blank? and fixed_value.zero?
         errors.add :percent_or_value, I18n.t('errors.messages.present') if percent_ratio.present? and !fixed_value.zero?
       end
+      
+    class << self
+      def args(*args)
+        case when args.blank? || args.first.kind_of?(Hash) then
+          {}.merge(*args)
+        when args.first.kind_of?(String) then
+          d = args.shift
+          if d.index('%')
+            #TODO parse
+          end
+        else
+          h = { fixed_value: args.shift.to_money }
+          args.any? ? h.merge(*args) : h
+        end
+      end
+    end
   end
 end

@@ -6,6 +6,9 @@
 #
 one:
   account: one
+  percent_ratio: 1.0
  
 two:
   account: one
+  fixed_value_cents: 100
+  fixed_value_currency: 'USD'

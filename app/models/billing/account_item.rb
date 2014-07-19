@@ -3,7 +3,7 @@ module Billing
     extend ActiveSupport::Concern
     
     included do
-      belongs_to :account
+      #belongs_to :account
 
       delegate :save, to: :account, prefix: :account
       after_save :account_save
