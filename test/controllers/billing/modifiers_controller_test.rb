@@ -1,10 +1,10 @@
 require 'test_helper'
 
 module Billing
-  class DiscountsControllerTest < ActionController::TestCase
+  class ModifiersControllerTest < ActionController::TestCase
     setup do
-      @discount = billing_discounts(:one)
-      @account = @discount.account  
+      @modifier = billing_modifiers(:one)
+      @account = @modifier.account  
     end
 
     test "should get new" do

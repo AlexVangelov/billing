@@ -1,0 +1,18 @@
+<h1>
+  New Modifier
+  <small><%= @account %></small>
+</h1>
+<div>
+  <%= @modifier.errors.full_messages.join(', ') %>
+</div>
+<%= form_for [@account, @modifier] do |f| %>
+  <%= @modifier.inspect %>
+  <br />
+  percent ratio <%= f.number_field :percent_ratio, step: 0.001 %>
+  <br />
+  fixed value <%= f.number_field :fixed_value, step: 0.01 %>
+  <br />
+  <%= f.select :charge_id, @account.charges.collect(&:id), { include_blank: true } %>
+  <br />
+  <%= f.submit %>
+<% end %>

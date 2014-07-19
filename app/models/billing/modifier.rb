@@ -1,9 +1,11 @@
 module Billing
-  class Discount < ActiveRecord::Base
+  class Modifier < ActiveRecord::Base
     include AccountItem
-    belongs_to :account, inverse_of: :discounts
+    belongs_to :account, inverse_of: :modifiers, validate: true
     belongs_to :charge
     monetize :fixed_value_cents
+    
+    validate :percent_or_value
     
     class << self
       def args_to_attributes(*args)
@@ -21,5 +23,11 @@ module Billing
         end
       end
     end
+    
+    private
+      def percent_or_value
+        errors.add :percent_or_value, I18n.t('errors.messages.blank') if percent_ratio.blank? and fixed_value.zero?
+        errors.add :percent_or_value, I18n.t('errors.messages.present') if percent_ratio.present? and !fixed_value.zero?
+      end
   end
 end

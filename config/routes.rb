@@ -1,7 +1,7 @@
 Billing::Engine.routes.draw do
   resources :accounts do
     resources :charges
-    resources :discounts
+    resources :modifiers
     resources :payments
   end
   root "application#index"

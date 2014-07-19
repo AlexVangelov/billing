@@ -1,16 +1,16 @@
 require_dependency "billing/application_controller"
 
 module Billing
-  class DiscountsController < ApplicationController
+  class ModifiersController < ApplicationController
     before_action :set_account
 
     def new
-      @discount = @account.discounts.new
+      @modifier = @account.modifiers.new
     end
     
     def create
-      @discount = @account.discounts.new(discount_params)
-      if @discount.save
+      @modifier = @account.modifiers.new(modifier_params)
+      if @modifier.save
         redirect_to @account
       else
         render action: :new
@@ -22,8 +22,8 @@ module Billing
         @account = billable.billing_accounts.find(params[:account_id])
       end
       
-      def discount_params
-        params.require(:discount).permit(:percent_ratio, :charge_id)
+      def modifier_params
+        params.require(:modifier).permit(:percent_ratio, :fixed_value, :charge_id)
       end
   end
 end

@@ -1,4 +1,4 @@
 module Billing
-  module DiscountsHelper
+  module ModifiersHelper
   end
 end

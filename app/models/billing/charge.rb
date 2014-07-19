@@ -1,7 +1,7 @@
 module Billing
   class Charge < ActiveRecord::Base
     include AccountItem
-    belongs_to :account, inverse_of: :charges
+    belongs_to :account, inverse_of: :charges, validate: true
     belongs_to :chargable, polymorphic: true
     monetize :price_cents
     
