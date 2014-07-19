@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
-
-  mount Billing::Engine => "/billing"
+  resources :profiles do
+    billing_for :profile
+  end
 end

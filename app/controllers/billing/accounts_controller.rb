@@ -2,7 +2,7 @@ require_dependency "billing/application_controller"
 
 module Billing
   class AccountsController < ApplicationController
-    before_action :set_account
+    before_action :set_account, except: [:index, :new, :create]
     
     def index
       @accounts = billable.billing_accounts

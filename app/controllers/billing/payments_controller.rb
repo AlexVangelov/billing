@@ -5,7 +5,7 @@ module Billing
     before_action :set_account
 
     def new
-      @payment = @account.payments.new
+      @payment = @account.payments.new(value: @account.total)
     end
     
     def create

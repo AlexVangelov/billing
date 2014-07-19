@@ -11,13 +11,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140717183129) do
+ActiveRecord::Schema.define(version: 20140718212116) do
 
   create_table "billing_accounts", force: true do |t|
     t.integer  "billable_id"
     t.string   "billable_type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "charges_sum_cents",      default: 0,     null: false
+    t.string   "charges_sum_currency",   default: "USD", null: false
+    t.integer  "discounts_sum_cents",    default: 0,     null: false
+    t.string   "discounts_sum_currency", default: "USD", null: false
+    t.integer  "payments_sum_cents",     default: 0,     null: false
+    t.string   "payments_sum_currency",  default: "USD", null: false
+    t.integer  "total_cents",            default: 0,     null: false
+    t.string   "total_currency",         default: "USD", null: false
+    t.integer  "balance_cents",          default: 0,     null: false
+    t.string   "balance_currency",       default: "USD", null: false
   end
 
   add_index "billing_accounts", ["billable_id", "billable_type"], name: "index_billing_accounts_on_billable_id_and_billable_type"
@@ -38,12 +48,28 @@ ActiveRecord::Schema.define(version: 20140717183129) do
   create_table "billing_discounts", force: true do |t|
     t.integer  "account_id"
     t.integer  "charge_id"
-    t.decimal  "percent_ratio", precision: 6, scale: 3
+    t.decimal  "percent_ratio",        precision: 6, scale: 3
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "fixed_value_cents",                            default: 0,     null: false
+    t.string   "fixed_value_currency",                         default: "USD", null: false
+  end
+
+  add_index "billing_discounts", ["account_id"], name: "index_billing_discounts_on_account_id"
+
+  create_table "billing_origins", force: true do |t|
+    t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "billing_discounts", ["account_id"], name: "index_billing_discounts_on_account_id"
+  create_table "billing_payment_types", force: true do |t|
+    t.string   "name"
+    t.boolean  "cash"
+    t.boolean  "fiscal"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "billing_payments", force: true do |t|
     t.integer  "account_id"
@@ -54,5 +80,10 @@ ActiveRecord::Schema.define(version: 20140717183129) do
   end
 
   add_index "billing_payments", ["account_id"], name: "index_billing_payments_on_account_id"
+
+  create_table "profiles", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
 end

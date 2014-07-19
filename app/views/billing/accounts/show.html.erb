@@ -1,4 +1,9 @@
 <%= @account.inspect %>
+<h2>
+  total: <%= @account.total %>
+  <br />
+  balance: <%= @account.balance %>
+</h2>
 <hr />
 Charges:<br />
 <% @account.charges.each do |charge| %>
@@ -11,6 +16,11 @@ Discounts:<br />
   <%= discount.inspect %>
 <% end %>
 <%= link_to :discount, [:new, @account, :discount] %>
+<div>
+  <% @account.discount_items.each do |di| %>
+    <%= di.inspect %><br />
+  <% end %>
+</div>
 <hr />
 Payments:<br />
 <% @account.payments.each do |payment| %>
