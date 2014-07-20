@@ -4,6 +4,7 @@ module Billing
   class AccountTest < ActiveSupport::TestCase
     setup do
       @account = billing_accounts(:one)
+      @account.save! # force summary calculation
     end
     
     test "charge" do
@@ -24,10 +25,10 @@ module Billing
       assert_equal '8 USD'.to_money, @account.total
     end
     
-    test "payment" do
-      payment = @account.pay 1
-      assert payment.persisted?
-      assert_equal '4 USD'.to_money, @account.payments_sum
+    test "pay" do
+      payment = @account.pay billing_payment_types(:one)
+      assert @account.balance.zero?, @account.errors.full_messages.join(', ')
+      assert_equal '7 USD'.to_money, @account.payments_sum
     end
     
     test "validate positive total" do

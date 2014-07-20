@@ -10,9 +10,7 @@ module Billing
     validates_presence_of :value
     
     after_initialize on: :create do
-      if account.try(:valid?)
-        self.value = account.total if value.zero?
-      end
+      self.value = -account.try(:balance).to_money if value.zero?
     end
     
     class << self
