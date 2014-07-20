@@ -35,7 +35,7 @@ Bill text constructor protocol:
     
 ###Discount/Surcharge
 
-    [+/-[value[%]]][/text]
+    +/-[value[%]][/text]
     
 ###Payment
 

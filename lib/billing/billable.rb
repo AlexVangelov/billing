@@ -8,11 +8,17 @@ module Billing
     
     module ClassMethods
       def has_billing(options={})
+        payment_types_scope = options.delete(:payment_types)
         has_many :billing_accounts, options.merge(as: :billable).reverse_merge(class_name: 'Billing::Account')
         provide_billing_items(:billing_accounts)
         if options[:as]
           has_many options[:as], options.merge(as: :billable).reverse_merge(class_name: 'Billing::Account')
           provide_billing_items(options[:as])
+        end
+        if payment_types_scope.present?
+          define_method :billing_payment_types do
+            payment_types_scope
+          end
         end
       end
 

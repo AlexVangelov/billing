@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140719110412) do
+ActiveRecord::Schema.define(version: 20140720132559) do
 
   create_table "billing_accounts", force: true do |t|
     t.integer  "billable_id"
@@ -71,14 +71,17 @@ ActiveRecord::Schema.define(version: 20140719110412) do
     t.boolean  "fiscal"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "type"
   end
 
   create_table "billing_payments", force: true do |t|
     t.integer  "account_id"
-    t.integer  "value_cents",    default: 0,     null: false
-    t.string   "value_currency", default: "USD", null: false
+    t.integer  "value_cents",     default: 0,     null: false
+    t.string   "value_currency",  default: "USD", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "type"
+    t.integer  "payment_type_id"
   end
 
   add_index "billing_payments", ["account_id"], name: "index_billing_payments_on_account_id"

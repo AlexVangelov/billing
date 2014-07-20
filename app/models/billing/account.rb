@@ -36,6 +36,10 @@ module Billing
     def modifier_items
       calculate_modifiers
     end
+    
+    def payment_types
+      billable.try(:billing_payment_types) || billable.try(:payment_types) || []
+    end
 
     private
       def calculate_modifiers
