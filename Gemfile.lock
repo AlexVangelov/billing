@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    billing (0.0.0)
+    billing (0.0.3)
       money-rails
       rails (>= 4.0.5)
 
