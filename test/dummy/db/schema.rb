@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140720132559) do
+ActiveRecord::Schema.define(version: 20140721173106) do
 
   create_table "billing_accounts", force: true do |t|
     t.integer  "billable_id"
@@ -47,6 +47,15 @@ ActiveRecord::Schema.define(version: 20140720132559) do
   add_index "billing_charges", ["account_id"], name: "index_billing_charges_on_account_id"
   add_index "billing_charges", ["chargable_id", "chargable_type"], name: "index_billing_charges_on_chargable_id_and_chargable_type"
 
+  create_table "billing_departments", force: true do |t|
+    t.integer  "master_id"
+    t.string   "name"
+    t.integer  "tax_group_id"
+    t.string   "type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "billing_modifiers", force: true do |t|
     t.integer  "account_id"
     t.integer  "charge_id"
@@ -58,6 +67,14 @@ ActiveRecord::Schema.define(version: 20140720132559) do
   end
 
   add_index "billing_modifiers", ["account_id"], name: "index_billing_modifiers_on_account_id"
+
+  create_table "billing_operators", force: true do |t|
+    t.integer  "master_id"
+    t.string   "name"
+    t.string   "type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "billing_origins", force: true do |t|
     t.string   "name"

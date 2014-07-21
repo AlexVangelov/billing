@@ -9,7 +9,8 @@ It is suitable for use in Trading Software, Online Shops and provides UFB (Unive
 ## The idea
 
 Bill text constructor protocol:
-  
+
+    *1                (set operator 1)  
     1.2               (charge $1.2)   / default currency or $, default tax group
     1.2               (charge $1.2)
     2*4,5             (2 charges $4.5)
@@ -28,8 +29,6 @@ Bill text constructor protocol:
     @1                (auto calculated payment with payment type 1 / or default payment type if not specified)
     @#36              (auto calculated payment and issue invoice for profile 36)         
 
-* Universal fiscal device compatible basket
-
 ###Charge
 
     [qty*][price][#PLU][@tax]][+surcharge[%]/-discount[%]][/text]
@@ -41,3 +40,41 @@ Bill text constructor protocol:
 ###Payment
 
     @[type[/value]][#profile]
+
+##Billing schema
+
+Namespace ***Billing***
+
+* **Account** - Base billing class.
+* **Charge** - Bill item which increases the total.
+* **Modilfier** - Discount or Surcharge for specified item or global. Can be percent or fixed value.
+* **Payment** - STI model, that defaults to payment with type. Can be extended to payment by external system or with payment gateway.
+
+Nomenclature:
+
+* **TaxGroup** - VAT settings
+* **PaymentType** - Cash, Fiscal
+* **Operator** - Users
+* **Department** - PLU (Price look-up) groups
+* **Plu** - Price look-up items
+* **Origin** - Billing source categorization and settings
+* **Profile** - Invoice infos
+
+
+**Instalation
+
+    gem 'billing'
+
+    bundle install
+    bundle exec bin/rake billing:install
+    bundle exec bin/rake db:migrate
+    
+###Enable billing for an ActiveRecord model by adding macro-like class method:
+
+    class MyBillableModel < ActiveRecord::Base
+      has_billing
+    end
+
+The module will add ***#billing_accounts*** collection to the model.
+
+[http://alexvangelov.wordpress.com/2014/07/20/ruby-on-rails-app-with-billing-and-fiscalization-part1-billing-model/](http://alexvangelov.wordpress.com/2014/07/20/ruby-on-rails-app-with-billing-and-fiscalization-part1-billing-model/)
