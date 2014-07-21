@@ -1,7 +1,8 @@
 billing
 =======
 
-Billing module for rails 4 app
+The schema of this module is oriented more toward compatibility with Fiscal Memory Devices, rather than Accounting Software, but it incorporates base Billing and Invoicing standards.  
+It is suitable for use in Trading Software, Online Shops and provides UFB (Universal Fiscal Basket) for issuing fiscal receipts with [Extface](https://github.com/AlexVangelov/extface) module.
 
 *This module is currently in development stage*
 
