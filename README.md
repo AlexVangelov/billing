@@ -50,11 +50,11 @@ Namespace ***Billing***
 * **Modilfier** - Discount or Surcharge for specified item or global. Can be percent or fixed value.
 * **Payment** - STI model, that defaults to payment with type. Can be extended to payment by external system or with payment gateway.
 
-Nomenclature:
+Nomenclature (STI models):
 
 * **TaxGroup** - VAT settings
 * **PaymentType** - Cash, Fiscal
-* **Operator** - Users
+* **Operator** - Fiscal device users
 * **Department** - PLU (Price look-up) groups
 * **Plu** - Price look-up items
 * **Origin** - Billing source categorization and settings
@@ -77,4 +77,4 @@ Nomenclature:
 
 The module will add ***#billing_accounts*** collection to the model.
 
-[http://alexvangelov.wordpress.com/2014/07/20/ruby-on-rails-app-with-billing-and-fiscalization-part1-billing-model/](http://alexvangelov.wordpress.com/2014/07/20/ruby-on-rails-app-with-billing-and-fiscalization-part1-billing-model/)
+See [http://alexvangelov.wordpress.com/2014/07/20/ruby-on-rails-app-with-billing-and-fiscalization-part1-billing-model/](http://alexvangelov.wordpress.com/2014/07/20/ruby-on-rails-app-with-billing-and-fiscalization-part1-billing-model/)
