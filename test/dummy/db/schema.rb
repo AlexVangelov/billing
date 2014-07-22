@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140721173106) do
+ActiveRecord::Schema.define(version: 20140722162315) do
 
   create_table "billing_accounts", force: true do |t|
     t.integer  "billable_id"
@@ -54,7 +54,12 @@ ActiveRecord::Schema.define(version: 20140721173106) do
     t.string   "type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "number"
+    t.boolean  "banned"
+    t.datetime "deleted_at"
   end
+
+  add_index "billing_departments", ["tax_group_id"], name: "index_billing_departments_on_tax_group_id"
 
   create_table "billing_modifiers", force: true do |t|
     t.integer  "account_id"
@@ -74,13 +79,24 @@ ActiveRecord::Schema.define(version: 20140721173106) do
     t.string   "type"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "number"
+    t.boolean  "banned"
+    t.datetime "deleted_at"
   end
 
   create_table "billing_origins", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "master_id"
+    t.integer  "fiscal_device_id"
+    t.boolean  "banned"
+    t.datetime "deleted_at"
+    t.string   "type"
+    t.string   "payment_model",    default: "Billing::PaymentWithType"
   end
+
+  add_index "billing_origins", ["fiscal_device_id"], name: "index_billing_origins_on_fiscal_device_id"
 
   create_table "billing_payment_types", force: true do |t|
     t.string   "name"
@@ -89,6 +105,10 @@ ActiveRecord::Schema.define(version: 20140721173106) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "type"
+    t.integer  "master_id"
+    t.integer  "number"
+    t.boolean  "banned"
+    t.datetime "deleted_at"
   end
 
   create_table "billing_payments", force: true do |t|
@@ -107,7 +127,20 @@ ActiveRecord::Schema.define(version: 20140721173106) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "master_id"
+    t.integer  "tax_group_id"
+    t.integer  "department_id"
+    t.integer  "number"
+    t.integer  "price_cents",    default: 0,     null: false
+    t.string   "price_currency", default: "USD", null: false
+    t.string   "code"
+    t.string   "type"
+    t.boolean  "banned"
+    t.datetime "deleted_at"
   end
+
+  add_index "billing_plus", ["department_id"], name: "index_billing_plus_on_department_id"
+  add_index "billing_plus", ["tax_group_id"], name: "index_billing_plus_on_tax_group_id"
 
   create_table "billing_profiles", force: true do |t|
     t.string   "name"
@@ -119,6 +152,12 @@ ActiveRecord::Schema.define(version: 20140721173106) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "master_id"
+    t.integer  "number"
+    t.decimal  "percent_ratio", precision: 6, scale: 3
+    t.boolean  "banned"
+    t.string   "type"
+    t.datetime "deleted_at"
   end
 
   create_table "profiles", force: true do |t|

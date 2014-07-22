@@ -9,19 +9,19 @@ module Billing
     
     test "charge" do
       charge = @account.charge 3
-      assert charge.persisted?
+      assert charge.try(:persisted?)
       assert_equal '13 USD'.to_money, @account.total # (1 + 3) + 100% + $1
     end
     
     test "discount" do
-      discount = @account.modify(-1.00)
-      assert discount.persisted?
+      discount = @account.modify(-1.00, charge: billing_charges(:two))
+      assert discount.try(:persisted?)
       assert_equal '6 USD'.to_money, @account.total
     end
     
     test "surcharge" do
-      surcharge = @account.modify(1.00)
-      assert surcharge.persisted?
+      surcharge = @account.modify(1.00, charge: billing_charges(:two))
+      assert surcharge.try(:persisted?)
       assert_equal '8 USD'.to_money, @account.total
     end
     

@@ -69,7 +69,7 @@ Nomenclature (STI models):
     bundle exec bin/rake billing:install
     bundle exec bin/rake db:migrate
     
-###Enable billing for an ActiveRecord model by adding macro-like class method:
+Enable billing for an ActiveRecord model by adding macro-like class method:
 
     class MyBillableModel < ActiveRecord::Base
       has_billing

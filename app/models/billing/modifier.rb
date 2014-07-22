@@ -6,6 +6,8 @@ module Billing
     monetize :fixed_value_cents
     
     validate :percent_or_value
+    validates_uniqueness_of :charge, scope: :account_id, allow_nil: true
+    validates_uniqueness_of :account, scope: :charge_id
     
     private
       def percent_or_value
