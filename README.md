@@ -91,8 +91,12 @@ There are some rules and restrictions in order to maintain the schema universal:
 More about ***Origin***
 
 Origin is complex object that is not involved in the billing calculations. It shows where the charges come from and where the account is paid. Each chargable object must respond to origin. The charges in the account may come from multiple origins and each payment belongs to origin. 
+
 When [extface](https://github.com/AlexVangelov/extface) module is included, it's possible to attach print devices to origin and print store information when a charge is created.
+
 Origin also determines the model of payment and fiscal memory device. That's why this object reflects the physical or virtual locations of administrative units for the billing system.
+
 If the application does'n care about the origins, it may have single default origin.
+
 
 In contrast to desktop applications, where the operator and the access point to program interface are located at the same place, the cloud based billing system has daily and closure reports per origin, not per operator.
