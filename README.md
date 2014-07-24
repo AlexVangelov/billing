@@ -84,19 +84,35 @@ See [http://alexvangelov.wordpress.com/2014/07/20/ruby-on-rails-app-with-billing
 There are some rules and restrictions in order to maintain the schema universal:
 * Charge may have only one modifier (discount or surcharge).
 * Account may have only one global modifier (total discount/surcharge).
+* Account may have only one cash payment
+* Account may not include payments of different payment models (= different origins)
+* Account may not include payments of different fiscal status
 * Cascade look-up rule. (Example: If a charge is not initialized with tax group, it looks for tax group in PLU reference. If the PLU doesn't have a tax group, it looks in it's department reference).
 * All nomenclature models are STI (Single Table Inheritance) and may be extended by main application.
 * Each billing database table has unused integer column ***master_id***, available for global application scopes.
 
 More about ***Origin***
 
-Origin is complex object that is not involved in the billing calculations. It shows where the charges come from and where the account is paid. Each chargable object must respond to origin. The charges in the account may come from multiple origins and each payment belongs to origin. 
+Origin is complex object that is not involved in the billing calculations. 
+By adding first payment to account, it allocates account completition origin. Origin restricts the remaining payments to be of the same origin's payment model.
+Recommended approach is to have chargable models belonging to Origin. This will allow the system to know where the charges come from.
+The charges in the account may come from multiple origins, but at the end of it's life, account have a single origin. 
 
 When [extface](https://github.com/AlexVangelov/extface) module is included, it's possible to attach print devices to origin and print store information when a charge is created.
 
 Origin also determines the model of payment and fiscal memory device. That's why this object reflects the physical or virtual locations of administrative units for the billing system.
-
-If the application does'n care about the origins, it may have single default origin.
-
+If the application does'n care about the origins, it may work with single default origin.
 
 In contrast to desktop applications, where the operator and the access point to program interface are located at the same place, the cloud based billing system has daily and closure reports per origin, not per operator.
+
+* The schema does not provide direct ***charge*** - ***payment*** reference. A charge is paid when the account balance is zero.
+Explanation: If account have 3 charges and 2 payments - one by credit card and one in cash, it's not possible to clarify exactly which charge is paid by card.
+
+####***Billable, Chargable & Payable**** polymorphic associations
+
+Billable is the object to which the module is plugged with *has_billing* class method. It may be a company, client or the application itself.
+
+Chargable can be any object. According to the explanations above, it should respond to *#origin*, or the billing module will look for a default origin (cascade look-up rule).
+
+At the moment Payable is only billing account. Will address deposits and advance payments when they are realized.
+
