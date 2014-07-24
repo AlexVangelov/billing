@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140722162315) do
+ActiveRecord::Schema.define(version: 20140724173917) do
 
   create_table "billing_accounts", force: true do |t|
     t.integer  "billable_id"
@@ -30,9 +30,11 @@ ActiveRecord::Schema.define(version: 20140722162315) do
     t.string   "balance_currency",        default: "USD", null: false
     t.integer  "surcharges_sum_cents",    default: 0,     null: false
     t.string   "surcharges_sum_currency", default: "USD", null: false
+    t.integer  "origin_id"
   end
 
   add_index "billing_accounts", ["billable_id", "billable_type"], name: "index_billing_accounts_on_billable_id_and_billable_type"
+  add_index "billing_accounts", ["origin_id"], name: "index_billing_accounts_on_origin_id"
 
   create_table "billing_charges", force: true do |t|
     t.integer  "account_id"

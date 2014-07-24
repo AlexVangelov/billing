@@ -9,3 +9,19 @@ two:
   name: MyString
   cash: false
   fiscal: false
+
+cash:
+  name: Cash
+  cash: true
+  fiscal: false
+
+fiscal: 
+  name: Fiscal
+  cash: true
+  fiscal: true
+  
+card:
+  name: Card
+  cash: false
+  fiscal: true
+  

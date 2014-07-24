@@ -16,8 +16,12 @@ module Billing
           provide_billing_items(options[:as])
         end
         if payment_types_scope.present?
-          define_method :billing_payment_types do
-            payment_types_scope
+          if payment_types_scope.respond_to? :scope
+            define_method :billing_payment_types do
+              payment_types_scope
+            end
+          else
+            alias_method :billing_payment_types, payment_types_scope.intern
           end
         end
       end

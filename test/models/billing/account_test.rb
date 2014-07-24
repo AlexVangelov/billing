@@ -34,10 +34,18 @@ module Billing
     test "validate positive total" do
       assert @account.save
       @account.modify(-500)
-      assert @account.errors[:total]
+      assert @account.errors.messages[:total]
       assert_raise ActiveRecord::RecordInvalid do
         @account.save!
       end
+    end
+    
+    test "account with payments should have origin" do
+      assert @account.origin
+      assert @account.payments.any?
+      @account.origin = nil
+      assert_equal false, @account.save
+      assert @account.errors.messages[:origin]
     end
   end
 end

@@ -11,12 +11,16 @@ module Billing
     has_many :charges, inverse_of: :account
     has_many :modifiers, inverse_of: :account
     has_many :payments, inverse_of: :account
+    belongs_to :origin, inverse_of: :accounts
     
     accepts_nested_attributes_for :charges, :modifiers, :payments
+    
+    delegate :payment_model, to: :origin, prefix: :origin, allow_nil: true
     
     before_validation :update_sumaries
     
     validates_numericality_of :total, greater_than_or_equal_to: 0
+    validates_presence_of :origin, if: :has_payments?
     
     def charge(*args)
       c = charges.new Charge.args(*args)
@@ -38,7 +42,15 @@ module Billing
     end
     
     def payment_types
-      billable.try(:billing_payment_types) || billable.try(:payment_types) || []
+      billable.try(:billing_payment_types) || Billing::PaymentType.all
+    end
+    
+    def origins
+      billable.try(:billing_origins) || Billing::Origin.all
+    end
+    
+    def has_payments?
+      payments.any?
     end
 
     private

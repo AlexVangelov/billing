@@ -2,6 +2,8 @@
 
 one:
   name: MyString
+  payment_model: Billing::PaymentWithType
 
 two:
   name: MyString
+  payment_model: Billing::PaymentWithType
