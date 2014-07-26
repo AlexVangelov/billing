@@ -12,6 +12,8 @@ module Billing
 
     belongs_to :account, inverse_of: :payments, validate: true
     
+    scope :in_period, lambda {|from, to| where(created_at: from..to) }
+    
     if defined? Extface
       belongs_to :extface_job, class_name: 'Extface::Job'
     end
@@ -36,6 +38,7 @@ module Billing
     
     def fiscal?; false; end
     def cash?; false; end
+    def external?; false; end
     
     def origin
       @origin || origins.find_by_id(@origin_id)

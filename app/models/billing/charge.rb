@@ -12,6 +12,8 @@ module Billing
     delegate :paid?, to: :account
     
     scope :unpaid, -> { joins(:account).where.not(billing_accounts: { balance_cents: 0}) }
+    scope :paid, -> { joins(:account).where(billing_accounts: { balance_cents: 0}) }
+    scope :in_period, lambda {|from, to| where(revenue_at: from..to) }
     
     validates_presence_of :price
     validates_numericality_of :value, greater_than_or_equal_to: 0
