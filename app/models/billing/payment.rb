@@ -13,6 +13,7 @@ module Billing
     belongs_to :account, inverse_of: :payments, validate: true
     
     scope :in_period, lambda {|from, to| where(created_at: from..to) }
+    scope :for_report, -> { joins(:account).where(billing_accounts: { balance_cents: 0}) }
     
     if defined? Extface
       belongs_to :extface_job, class_name: 'Extface::Job'
@@ -24,16 +25,11 @@ module Billing
     validates :type, inclusion: { in: PAYMENT_MODELS }
     
     after_initialize on: :create do
-      self.value = -account.try(:balance).to_money if value.zero?
+      self.value = -account.try(:balance) if value.zero?
     end
     
     before_validation do
       account.origin = origin unless account.origin and account.payments.many?
-    end
-    
-    def self.new(attributes = nil, options = {}, &block)
-      payment_model = super(attributes, options, &block).origin.try(:payment_model)
-      super(attributes.merge(type: payment_model), options, &block)
     end
     
     def fiscal?; false; end
@@ -47,7 +43,7 @@ module Billing
     private
       class << self
         def args(*args)
-          h = { type: 'Billing::PaymentWithType' }
+          h = {}
           case when args.blank? || args.first.kind_of?(Hash) then
             args.blank? ? h : h.merge(*args)
           when args.first.kind_of?(String) then

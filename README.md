@@ -60,7 +60,7 @@ Nomenclature (STI models):
 * **Profile** - Invoice infos
 
 * **Origin** - Billing source categorization and settings
-* **Closure** - Daily and periodical closure reports
+* **Report** - Daily and periodical finance and fiscal reports
 
 
 **Instalation

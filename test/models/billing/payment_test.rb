@@ -33,7 +33,7 @@ module Billing
     end
     
     test "should be single cash payments" do
-      @account.payments.create!(type: 'Billing::PaymentWithType', value: 1, payment_type: billing_payment_types(:cash))
+      @account.payments.create!(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:cash).id)
       payment = @account.payments.new(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:cash).id)
       assert !payment.save
       assert payment.errors.messages[:account]

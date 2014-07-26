@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140725164847) do
+ActiveRecord::Schema.define(version: 20140726170002) do
 
   create_table "billing_accounts", force: true do |t|
     t.integer  "billable_id"
@@ -32,11 +32,13 @@ ActiveRecord::Schema.define(version: 20140725164847) do
     t.string   "surcharges_sum_currency", default: "USD", null: false
     t.integer  "origin_id"
     t.integer  "extface_job_id"
+    t.integer  "report_id"
   end
 
   add_index "billing_accounts", ["billable_id", "billable_type"], name: "index_billing_accounts_on_billable_id_and_billable_type"
   add_index "billing_accounts", ["extface_job_id"], name: "index_billing_accounts_on_extface_job_id"
   add_index "billing_accounts", ["origin_id"], name: "index_billing_accounts_on_origin_id"
+  add_index "billing_accounts", ["report_id"], name: "index_billing_accounts_on_report_id"
 
   create_table "billing_charges", force: true do |t|
     t.integer  "account_id"
@@ -60,28 +62,6 @@ ActiveRecord::Schema.define(version: 20140725164847) do
   add_index "billing_charges", ["deleted_at"], name: "index_billing_charges_on_deleted_at"
   add_index "billing_charges", ["origin_id"], name: "index_billing_charges_on_origin_id"
   add_index "billing_charges", ["revenue_at"], name: "index_billing_charges_on_revenue_at"
-
-  create_table "billing_closures", force: true do |t|
-    t.integer  "master_id"
-    t.integer  "origin_id"
-    t.integer  "payments_sum_cents",       default: 0,     null: false
-    t.string   "payments_sum_currency",    default: "USD", null: false
-    t.integer  "payments_cash_cents",      default: 0,     null: false
-    t.string   "payments_cash_currency",   default: "USD", null: false
-    t.integer  "payments_fiscal_cents",    default: 0,     null: false
-    t.string   "payments_fiscal_currency", default: "USD", null: false
-    t.text     "note"
-    t.string   "type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "extface_job_id"
-    t.date     "f_period_from"
-    t.date     "f_period_to"
-    t.boolean  "zeroing"
-    t.string   "f_operation"
-  end
-
-  add_index "billing_closures", ["origin_id"], name: "index_billing_closures_on_origin_id"
 
   create_table "billing_departments", force: true do |t|
     t.integer  "master_id"
@@ -167,12 +147,10 @@ ActiveRecord::Schema.define(version: 20140725164847) do
     t.string   "description"
     t.string   "external_token"
     t.string   "note"
-    t.integer  "closure_id"
     t.datetime "deleted_at"
   end
 
   add_index "billing_payments", ["account_id"], name: "index_billing_payments_on_account_id"
-  add_index "billing_payments", ["closure_id"], name: "index_billing_payments_on_closure_id"
   add_index "billing_payments", ["deleted_at"], name: "index_billing_payments_on_deleted_at"
 
   create_table "billing_plus", force: true do |t|
@@ -210,6 +188,28 @@ ActiveRecord::Schema.define(version: 20140725164847) do
 
   add_index "billing_pt_fp_mappings", ["extface_driver_id"], name: "index_billing_pt_fp_mappings_on_extface_driver_id"
   add_index "billing_pt_fp_mappings", ["payment_type_id"], name: "index_billing_pt_fp_mappings_on_payment_type_id"
+
+  create_table "billing_reports", force: true do |t|
+    t.integer  "master_id"
+    t.integer  "origin_id"
+    t.integer  "payments_sum_cents",       default: 0,     null: false
+    t.string   "payments_sum_currency",    default: "USD", null: false
+    t.integer  "payments_cash_cents",      default: 0,     null: false
+    t.string   "payments_cash_currency",   default: "USD", null: false
+    t.integer  "payments_fiscal_cents",    default: 0,     null: false
+    t.string   "payments_fiscal_currency", default: "USD", null: false
+    t.text     "note"
+    t.string   "type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "extface_job_id"
+    t.date     "f_period_from"
+    t.date     "f_period_to"
+    t.boolean  "zeroing"
+    t.string   "f_operation"
+  end
+
+  add_index "billing_reports", ["origin_id"], name: "index_billing_reports_on_origin_id"
 
   create_table "billing_tax_groups", force: true do |t|
     t.string   "name"

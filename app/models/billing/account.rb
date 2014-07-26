@@ -64,7 +64,11 @@ module Billing
     end
     
     def paid?
-      balance.zero?
+      has_payments? && balance.zero?
+    end
+    
+    def build_typed_payment(attributes = {})
+      payments.new(attributes.merge(type: origin.try(:payment_model) || 'Billing::PaymentWithType'))
     end
 
     private
