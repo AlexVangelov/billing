@@ -12,15 +12,25 @@ module Billing
     has_many :modifiers, inverse_of: :account
     has_many :payments, inverse_of: :account
     belongs_to :origin, inverse_of: :accounts
+    if defined? Extface
+      belongs_to :extface_job, class_name: 'Extface::Job'
+    end
     
     accepts_nested_attributes_for :charges, :modifiers, :payments
     
     delegate :payment_model, to: :origin, prefix: :origin, allow_nil: true
     
+    scope :unpaid, -> { where(arel_table[:balance_cents].lt(0)) }
+    scope :open, -> { where.not(balance_cents: 0) }
+    
     before_validation :update_sumaries
     
     validates_numericality_of :total, greater_than_or_equal_to: 0
+    validates_numericality_of :balance, less_than_or_equal_to: 0
     validates_presence_of :origin, if: :has_payments?
+    
+    validates_absence_of :payments_of_diff_models?, 
+      :payments_of_diff_fiscalization?, :multiple_cash_payments?, if: :has_payments?
     
     def charge(*args)
       c = charges.new Charge.args(*args)
@@ -52,6 +62,10 @@ module Billing
     def has_payments?
       payments.any?
     end
+    
+    def paid?
+      balance.zero?
+    end
 
     private
       def calculate_modifiers
@@ -73,6 +87,18 @@ module Billing
         self.payments_sum = payments.to_a.sum(&:value).to_money
         self.total = charges_sum + surcharges_sum - discounts_sum
         self.balance = payments_sum - total
+      end
+      
+      def payments_of_diff_models?
+        payments.to_a.group_by(&:type).many?
+      end
+      
+      def payments_of_diff_fiscalization?
+        payments.to_a.group_by(&:fiscal?).many?
+      end
+      
+      def multiple_cash_payments?
+        payments.to_a.select(&:cash?).many?
       end
   end
 end

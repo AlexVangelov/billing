@@ -9,5 +9,13 @@ module Billing
       self.payment_type = billable.try(:default_payment_type) unless payment_type
     end
     
+    def fiscal?
+      payment_type.fiscal
+    end
+    
+    def cash?
+      payment_type.cash
+    end
+    
   end
 end

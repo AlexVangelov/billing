@@ -23,12 +23,20 @@ module Billing
     test "should be instance of account's origin_payment_model" do
       payment = @account.payments.new(type: 'Billing::Payment', value: 1, payment_type_id: @payment.payment_type_id)
       assert !payment.save
-      assert payment.errors.messages[:type]
+      assert payment.errors.messages[:account]
     end
     
     test "should have same fiscal flag as other account payments" do
-      payment = @account.payments.new(type: 'Billing::PaymentWithType', value: 1, payment_type: billing_payment_types(:fiscal))
+      payment = @account.payments.new(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:fiscal).id)
       assert !payment.save
+      assert payment.errors.messages[:account]
+    end
+    
+    test "should be single cash payments" do
+      @account.payments.create!(type: 'Billing::PaymentWithType', value: 1, payment_type: billing_payment_types(:cash))
+      payment = @account.payments.new(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:cash).id)
+      assert !payment.save
+      assert payment.errors.messages[:account]
     end
   end
 end
