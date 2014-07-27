@@ -1,8 +1,8 @@
 module Billing
   class Payment < ActiveRecord::Base
     PAYMENT_WITH_TYPE = 'Billing::PaymentWithType'.freeze
-    PAYMENT_EXTERNAL = 'Billing::PaymentExtrernal'.freeze
-    PAYPAL_EXPRESS = 'Billing::PayPalExpress'.freeze
+    PAYMENT_EXTERNAL = 'Billing::PaymentExternal'.freeze
+    PAYPAL_EXPRESS = 'Billing::PaypalExpress'.freeze
     PAYMENT_MODELS = [PAYMENT_WITH_TYPE, PAYMENT_EXTERNAL, PAYPAL_EXPRESS].freeze
     
     include AccountItem
