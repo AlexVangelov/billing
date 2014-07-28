@@ -18,8 +18,8 @@ module Billing
     validates_presence_of :price
     validates_numericality_of :value, greater_than_or_equal_to: 0
     
-    before_validation do
-      self.value = price unless modifier.present?
+    before_save do
+      self.value = price unless modifier.present? #FIXME global account modifier lost
     end
     
     class << self

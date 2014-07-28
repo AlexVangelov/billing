@@ -6,7 +6,7 @@ module Billing
     validates :payment_type, inclusion: { in: :payment_types }
     
     after_initialize on: :create do
-      self.payment_type = billable.try(:default_payment_type) unless payment_type
+      self.payment_type = default_payment_type unless payment_type
     end
     
     def fiscal?
@@ -16,6 +16,15 @@ module Billing
     def cash?
       payment_type.cash
     end
+    
+    private
+      def default_payment_type
+        if pt = billable.try(:default_payment_type)
+          pt
+        else
+          account.payment_types.try(:first) unless account.payment_types.many?
+        end
+      end
     
   end
 end

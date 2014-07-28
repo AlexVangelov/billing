@@ -47,5 +47,10 @@ module Billing
       assert_equal false, @account.save
       assert @account.errors.messages[:origin]
     end
+    
+    test "autofin" do
+      assert @account.pay billing_payment_types(:one)
+      assert @account.finalized_at
+    end
   end
 end

@@ -25,6 +25,8 @@ module Billing
     
     before_validation :update_sumaries
     
+    before_save :perform_autofin, if: :becomes_paid?
+    
     validates_numericality_of :total, greater_than_or_equal_to: 0
     validates_numericality_of :balance, less_than_or_equal_to: 0
     validates_presence_of :origin, if: :has_payments?
@@ -43,7 +45,7 @@ module Billing
     end
     
     def pay(*args)
-      p = payments.new Payment.args(*args)
+      p = build_typed_payment Payment.args(*args)
       p if p.save
     end
     
@@ -70,13 +72,19 @@ module Billing
     def build_typed_payment(attributes = {})
       payments.new(attributes.merge(type: origin.try(:payment_model) || 'Billing::PaymentWithType'))
     end
+    
+    def fiscalize #TODO test
+      extface_job = origin.fiscal_device.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
+      extface_job if save
+    end
 
     private
       def calculate_modifiers
         @modifier_items = ModifierItems.new.tap() do |items|
           modifiers.each do |modifier|
             if charge = modifier.charge
-              items << Charge.new(price: modifier.percent_ratio.nil? ? modifier.fixed_value : (charge.price * modifier.percent_ratio), chargable: charge)
+              charge.value = modifier.percent_ratio.nil? ? modifier.fixed_value : (charge.price * modifier.percent_ratio)
+              items << Charge.new(price: charge.value, chargable: charge)
             else
               items << Charge.new(price: modifier.percent_ratio.nil? ? modifier.fixed_value : (charges.to_a.sum(&:price).to_money * modifier.percent_ratio))
             end
@@ -103,6 +111,24 @@ module Billing
       
       def multiple_cash_payments?
         payments.to_a.select(&:cash?).many?
+      end
+      
+      def becomes_paid?
+        finalized_at.nil? && has_payments? && balance.zero?
+      end
+      
+      def perform_autofin
+        if autofin
+          self.finalized_at = Time.now
+          if defined? Extface
+            self.extface_job = origin.fiscal_device.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
+          end
+        end
+        true
+      end
+      
+      def fiscalizable?
+        payments.select(&:fiscal?)
       end
   end
 end
