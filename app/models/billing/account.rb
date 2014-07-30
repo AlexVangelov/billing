@@ -1,5 +1,8 @@
 module Billing
   class Account < ActiveRecord::Base
+    acts_as_paranoid if respond_to?(:acts_as_paranoid)
+    has_paper_trail class_name: 'Billing::Version' if respond_to?(:has_paper_trail)
+      
     monetize :charges_sum_cents
     monetize :discounts_sum_cents
     monetize :surcharges_sum_cents
@@ -8,9 +11,9 @@ module Billing
     monetize :balance_cents
     
     belongs_to :billable, polymorphic: true
-    has_many :charges, inverse_of: :account
-    has_many :modifiers, inverse_of: :account
-    has_many :payments, inverse_of: :account
+    has_many :charges, inverse_of: :account, dependent: :destroy
+    has_many :modifiers, inverse_of: :account, dependent: :destroy
+    has_many :payments, inverse_of: :account, dependent: :restrict_with_error
     belongs_to :origin, inverse_of: :accounts
     if defined? Extface
       belongs_to :extface_job, class_name: 'Extface::Job'
@@ -25,6 +28,10 @@ module Billing
     
     before_validation :update_sumaries
     
+    before_save on: :create do
+      self.number = "#{billable.id}:#{billable.billing_accounts.count}"
+      self.name = "B:#{number}" if name.nil?
+    end
     before_save :perform_autofin, if: :becomes_paid?
     
     validates_numericality_of :total, greater_than_or_equal_to: 0

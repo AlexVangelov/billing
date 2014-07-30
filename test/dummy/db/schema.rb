@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140728110230) do
+ActiveRecord::Schema.define(version: 20140729182146) do
 
   create_table "billing_accounts", force: true do |t|
     t.integer  "billable_id"
@@ -35,6 +35,9 @@ ActiveRecord::Schema.define(version: 20140728110230) do
     t.integer  "report_id"
     t.boolean  "autofin",                 default: true
     t.datetime "finalized_at"
+    t.string   "name"
+    t.string   "number"
+    t.datetime "deleted_at"
   end
 
   add_index "billing_accounts", ["billable_id", "billable_type"], name: "index_billing_accounts_on_billable_id_and_billable_type"
@@ -88,6 +91,7 @@ ActiveRecord::Schema.define(version: 20140728110230) do
     t.datetime "updated_at"
     t.integer  "fixed_value_cents",                            default: 0,     null: false
     t.string   "fixed_value_currency",                         default: "USD", null: false
+    t.datetime "deleted_at"
   end
 
   add_index "billing_modifiers", ["account_id"], name: "index_billing_modifiers_on_account_id"
