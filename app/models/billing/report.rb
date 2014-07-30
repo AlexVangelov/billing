@@ -1,6 +1,10 @@
 module Billing
   class Report < ActiveRecord::Base
-    
+    FISCAL_X_REPORT = 'x_report'.freeze
+    FISCAL_Z_REPORT = 'z_report'.freeze
+    FISCAL_PERIOD_REPORT = 'period_report'.freeze
+    F_OPERATIONS = [FISCAL_X_REPORT, FISCAL_Z_REPORT, FISCAL_PERIOD_REPORT].freeze
+      
     has_paper_trail class_name: 'Billing::Version'
     belongs_to :origin, inverse_of: :reports
     has_many :accounts, inverse_of: :report, autosave: true
@@ -11,8 +15,12 @@ module Billing
     
     validates_presence_of :origin
     validates_absence_of :partially_paid_accounts?
-    before_validation :set_closure_to_account
+    validates :f_operation, inclusion: { in: F_OPERATIONS }, allow_nil: true
+    validates_presence_of :f_period_from, :f_period_to, if: :fiscal_period_report?
+    
+    before_validation :set_report_to_accounts
     before_create :update_summary
+    
     
     def fiscalization
       if origin.fiscal_device.present?
@@ -22,29 +30,35 @@ module Billing
     end
     
     private
-      def set_closure_to_account
-        #self.payments << origin.payments.for_closure if [KIND_SIMPLE, KIND_WITH_FP_Z].include? kind
+    
+      def fiscal_period_report?
+        f_operation == FISCAL_PERIOD_REPORT
+      end
+      
+      def set_report_to_accounts
+        self.accounts << origin.accounts.select(&:paid?) if zeroing?
       end
       
       def update_summary
-        self.payments_sum = payments.to_a.sum(Money.new(0, 'USD'), &:value)
-        self.payments_cash = payments.select{ |p| p.try(:cash?) }.sum(Money.new(0, 'USD'), &:value)
-        self.payments_fiscal = payments.select{ |p| p.try(:fiscal?) }.sum(Money.new(0, 'USD'), &:value)
+        # self.payments_sum = payments.to_a.sum(Money.new(0, 'USD'), &:value)
+        # self.payments_cash = payments.select{ |p| p.try(:cash?) }.sum(Money.new(0, 'USD'), &:value)
+        # self.payments_fiscal = payments.select{ |p| p.try(:fiscal?) }.sum(Money.new(0, 'USD'), &:value)
         perform_fiscal_job
       end
       
       def perform_fiscal_job
-        if [KIND_WITH_FP_Z, KIND_ONLY_FP_Z].include? kind
+        case f_operation
+        when FISCAL_Z_REPORT then
           self.extface_job = origin.fiscal_device.driver.z_report_session
-        elsif kind == KIND_ONLY_FP_X
+        when FISCAL_X_REPORT then
           self.extface_job = origin.fiscal_device.driver.x_report_session
-        elsif kind == KIND_ONLY_FP_PERIOD
+        when FISCAL_PERIOD_REPORT then
           p "period"
         end
       end
       
-      def partially_paid_account?
-        false
+      def partially_paid_accounts?
+        accounts.partially_paid.any?
       end
   end
 end

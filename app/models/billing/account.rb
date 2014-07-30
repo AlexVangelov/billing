@@ -15,6 +15,8 @@ module Billing
     has_many :modifiers, inverse_of: :account, dependent: :destroy
     has_many :payments, inverse_of: :account, dependent: :restrict_with_error
     belongs_to :origin, inverse_of: :accounts
+    belongs_to :report, inverse_of: :accounts
+    
     if defined? Extface
       belongs_to :extface_job, class_name: 'Extface::Job'
     end
@@ -25,6 +27,7 @@ module Billing
     
     scope :unpaid, -> { where(arel_table[:balance_cents].lt(0)) }
     scope :open, -> { where.not(balance_cents: 0) }
+    scope :partially_paid, -> { where.not( payments_sum_cents: 0, balance_cents: 0 ) }
     
     before_validation :update_sumaries
     
