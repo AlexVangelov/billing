@@ -9,6 +9,8 @@ module Billing
     belongs_to :origin, inverse_of: :reports
     has_many :accounts, inverse_of: :report, autosave: true
     belongs_to :extface_job, class_name: 'Extface::Job'
+    has_many :payments, through: :accounts
+
     monetize :payments_sum_cents
     monetize :payments_cash_cents
     monetize :payments_fiscal_cents
@@ -40,9 +42,9 @@ module Billing
       end
       
       def update_summary
-        # self.payments_sum = payments.to_a.sum(Money.new(0, 'USD'), &:value)
-        # self.payments_cash = payments.select{ |p| p.try(:cash?) }.sum(Money.new(0, 'USD'), &:value)
-        # self.payments_fiscal = payments.select{ |p| p.try(:fiscal?) }.sum(Money.new(0, 'USD'), &:value)
+        self.payments_sum = accounts.to_a.sum(Money.new(0, 'USD'), &:payments_sum)
+        self.payments_cash = payments.select{ |p| p.try(:cash?) }.sum(Money.new(0, 'USD'), &:value)
+        self.payments_fiscal = payments.select{ |p| p.try(:fiscal?) }.sum(Money.new(0, 'USD'), &:value)
         perform_fiscal_job
       end
       

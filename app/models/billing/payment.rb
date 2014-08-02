@@ -7,13 +7,14 @@ module Billing
     
     include AccountItem
     
-    attr_writer :origin, :origin_id
+    attr_writer :origin
+    attr_accessor :origin_id
     monetize :value_cents
 
     belongs_to :account, inverse_of: :payments, validate: true
     
     scope :in_period, lambda {|from, to| where(created_at: from..to) }
-    scope :for_report, -> { joins(:account).where(billing_accounts: { balance_cents: 0}) }
+    scope :for_report, -> { joins(:account).where(billing_accounts: { balance_cents: 0 ,report_id: nil }) }
     
     if defined? Extface
       belongs_to :extface_job, class_name: 'Extface::Job'

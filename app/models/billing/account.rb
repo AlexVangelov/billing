@@ -138,7 +138,7 @@ module Billing
       end
       
       def fiscalizable?
-        payments.select(&:fiscal?)
+        payments.select(&:fiscal?).any?
       end
   end
 end
