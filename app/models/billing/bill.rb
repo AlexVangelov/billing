@@ -1,5 +1,5 @@
 module Billing
-  class Account < ActiveRecord::Base
+  class Bill < ActiveRecord::Base
     acts_as_paranoid if respond_to?(:acts_as_paranoid)
     has_paper_trail class_name: 'Billing::Version' if respond_to?(:has_paper_trail)
       
@@ -11,11 +11,11 @@ module Billing
     monetize :balance_cents
     
     belongs_to :billable, polymorphic: true
-    has_many :charges, inverse_of: :account, dependent: :destroy
-    has_many :modifiers, inverse_of: :account, dependent: :destroy
-    has_many :payments, inverse_of: :account, dependent: :restrict_with_error
-    belongs_to :origin, inverse_of: :accounts
-    belongs_to :report, inverse_of: :accounts
+    has_many :charges, inverse_of: :bill, dependent: :destroy
+    has_many :modifiers, inverse_of: :bill, dependent: :destroy
+    has_many :payments, inverse_of: :bill, dependent: :restrict_with_error
+    belongs_to :origin, inverse_of: :bills
+    belongs_to :report, inverse_of: :bills
     
     if defined? Extface
       belongs_to :extface_job, class_name: 'Extface::Job'
@@ -32,7 +32,7 @@ module Billing
     before_validation :update_sumaries
     
     before_save on: :create do
-      self.number = "#{billable.id}:#{billable.billing_accounts.count}"
+      self.number = "#{billable.id}:#{billable.billing_bills.count}"
       self.name = "B:#{number}" if name.nil?
     end
     before_save :perform_autofin, if: :becomes_paid?
@@ -80,7 +80,8 @@ module Billing
     end
     
     def build_typed_payment(attributes = {})
-      payments.new(attributes.merge(type: origin.try(:payment_model) || 'Billing::PaymentWithType'))
+      payment_origin = attributes[:origin] || origins.find_by_id(attributes[:origin_id])
+      payments.new(attributes.merge(type: (payment_origin || origin).try(:payment_model) || 'Billing::PaymentWithType'))
     end
     
     def fiscalize #TODO test

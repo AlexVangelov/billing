@@ -9,10 +9,10 @@ module Billing
     module ClassMethods
       def has_billing(options={})
         payment_types_scope = options.delete(:payment_types)
-        has_many :billing_accounts, options.merge(as: :billable).reverse_merge(class_name: 'Billing::Account')
-        provide_billing_items(:billing_accounts)
+        has_many :billing_bills, options.merge(as: :billable).reverse_merge(class_name: 'Billing::Bill')
+        provide_billing_items(:billing_bills)
         if options[:as]
-          has_many options[:as], options.merge(as: :billable).reverse_merge(class_name: 'Billing::Account')
+          has_many options[:as], options.merge(as: :billable).reverse_merge(class_name: 'Billing::Bill')
           provide_billing_items(options[:as])
         end
         if payment_types_scope.present?

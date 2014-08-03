@@ -5,11 +5,11 @@
 # below each fixture, per the syntax in the comments below
 #
 one:
-  account: one
+  bill: one
   price_cents: 100
   price_currency: USD
  
 two:
-  account: one
+  bill: one
   price_cents: 200
   price_currency: USD

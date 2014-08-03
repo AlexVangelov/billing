@@ -1,8 +1,8 @@
 module Billing
   class Origin < ActiveRecord::Base
-    has_many :accounts, inverse_of: :origin
+    has_many :bills, inverse_of: :origin
     has_many :charges, inverse_of: :origin
-    has_many :payments, through: :accounts
+    has_many :payments, through: :bills
     if defined? Extface
       belongs_to :fiscal_device, ->(o) { where( extfaceable_id: o.master_id ) }, class_name: 'Extface::Device'
     end

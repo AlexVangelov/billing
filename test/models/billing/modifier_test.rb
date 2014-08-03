@@ -22,10 +22,10 @@ module Billing
       assert mod.errors[:charge]
     end
     
-    test "allow only one global account modifier" do
+    test "allow only one global bill modifier" do
       mod = billing_modifiers(:two).dup
       assert_equal false, mod.save
-      assert mod.errors[:account]
+      assert mod.errors[:bill]
     end
     
   end

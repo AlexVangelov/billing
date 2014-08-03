@@ -1,7 +1,5 @@
 require "billing/engine"
 require "billing/billable"
-require "billing/mapping"
-require "billing/routes"
 
 module Billing
   mattr_reader :mappings

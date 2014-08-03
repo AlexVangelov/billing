@@ -4,7 +4,7 @@ module Billing
   class PaymentTest < ActiveSupport::TestCase
     setup do
       @payment = billing_payments(:one)
-      @account = @payment.account
+      @bill = @payment.bill
     end
     
     # test "args_to_attributes class method" do
@@ -16,27 +16,27 @@ module Billing
     # end
     
     test "create" do
-      assert_equal 'Billing::PaymentWithType', @account.origin_payment_model
-      assert @account.payments.create(type: 'Billing::PaymentWithType', value: 1, payment_type_id: @payment.payment_type_id).persisted?, "Can't create payment"
+      assert_equal 'Billing::PaymentWithType', @bill.origin_payment_model
+      assert @bill.payments.create(type: 'Billing::PaymentWithType', value: 1, payment_type_id: @payment.payment_type_id).persisted?, "Can't create payment"
     end
     
-    test "should be instance of account's origin_payment_model" do
-      payment = @account.payments.new(type: 'Billing::Payment', value: 1, payment_type_id: @payment.payment_type_id)
+    test "should be instance of bill's origin_payment_model" do
+      payment = @bill.payments.new(type: 'Billing::Payment', value: 1, payment_type_id: @payment.payment_type_id)
       assert !payment.save
-      assert payment.errors.messages[:account]
+      assert payment.errors.messages[:bill]
     end
     
-    test "should have same fiscal flag as other account payments" do
-      payment = @account.payments.new(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:fiscal).id)
+    test "should have same fiscal flag as other bill payments" do
+      payment = @bill.payments.new(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:fiscal).id)
       assert !payment.save
-      assert payment.errors.messages[:account]
+      assert payment.errors.messages[:bill]
     end
     
     test "should be single cash payments" do
-      @account.payments.create!(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:cash).id)
-      payment = @account.payments.new(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:cash).id)
+      @bill.payments.create!(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:cash).id)
+      payment = @bill.payments.new(type: 'Billing::PaymentWithType', value: 1, payment_type_id: billing_payment_types(:cash).id)
       assert !payment.save
-      assert payment.errors.messages[:account]
+      assert payment.errors.messages[:bill]
     end
   end
 end

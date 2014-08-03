@@ -22,7 +22,7 @@ module Billing
         if pt = billable.try(:default_payment_type)
           pt
         else
-          account.payment_types.try(:first) unless account.payment_types.many?
+          bill.payment_types.try(:first) unless bill.payment_types.many?
         end
       end
     

@@ -5,11 +5,11 @@
 # below each fixture, per the syntax in the comments below
 #
 one:
-  account: one
+  bill: one
   percent_ratio: 1.0
  
 two:
-  account: one
+  bill: one
   charge: one
   fixed_value_cents: 100
   fixed_value_currency: 'USD'

@@ -1,13 +1,13 @@
 module Billing
   class Modifier < ActiveRecord::Base
-    include AccountItem
-    belongs_to :account, inverse_of: :modifiers, validate: true
+    include BillItem
+    belongs_to :bill, inverse_of: :modifiers, validate: true
     belongs_to :charge, inverse_of: :modifier
     monetize :fixed_value_cents
     
     validate :percent_or_value
-    validates_uniqueness_of :charge, scope: :account_id, allow_nil: true
-    validates_uniqueness_of :account, scope: :charge_id
+    validates_uniqueness_of :charge, scope: :bill_id, allow_nil: true
+    validates_uniqueness_of :bill, scope: :charge_id
     
     private
       def percent_or_value

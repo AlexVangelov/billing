@@ -1,17 +1,17 @@
 module Billing
-  module AccountItem
+  module BillItem
     extend ActiveSupport::Concern
     
     included do
       acts_as_paranoid if respond_to?(:acts_as_paranoid)
       has_paper_trail class_name: 'Billing::Version' if respond_to?(:has_paper_trail)
       
-      delegate :save, to: :account, prefix: :account
-      delegate :origins, :payment_types, to: :account
+      delegate :save, to: :bill, prefix: :bill
+      delegate :origins, :payment_types, to: :bill
       
-      after_save :account_save
+      after_save :bill_save
       
-      validates_presence_of :account
+      validates_presence_of :bill
     end
 
   end

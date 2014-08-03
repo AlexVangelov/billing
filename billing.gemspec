@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email       = ["email@data.bg"]
   s.homepage    = "http://extface.com"
   s.summary     = "Billing for Rails 4 app"
-  s.description = "Provides billing accounts for an ActiveRecord model"
+  s.description = "Provides billing for an ActiveRecord model"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]

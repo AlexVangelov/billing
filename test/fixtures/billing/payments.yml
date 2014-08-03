@@ -5,14 +5,14 @@
 # below each fixture, per the syntax in the comments below
 #
 one:
-  account: one
+  bill: one
   value_cents: 100
   value_currency: USD
   payment_type: one
   type: Billing::PaymentWithType
  
 two:
-  account: one
+  bill: one
   value_cents: 200
   value_currency: USD
   payment_type: one

@@ -7,20 +7,20 @@ module Billing
       
     has_paper_trail class_name: 'Billing::Version'
     belongs_to :origin, inverse_of: :reports
-    has_many :accounts, inverse_of: :report, autosave: true
+    has_many :bills, inverse_of: :report, autosave: true
     belongs_to :extface_job, class_name: 'Extface::Job'
-    has_many :payments, through: :accounts
+    has_many :payments, through: :bills
 
     monetize :payments_sum_cents
     monetize :payments_cash_cents
     monetize :payments_fiscal_cents
     
     validates_presence_of :origin
-    validates_absence_of :partially_paid_accounts?
+    validates_absence_of :partially_paid_bills?
     validates :f_operation, inclusion: { in: F_OPERATIONS }, allow_nil: true
     validates_presence_of :f_period_from, :f_period_to, if: :fiscal_period_report?
     
-    before_validation :set_report_to_accounts
+    before_validation :set_report_to_bills
     before_create :update_summary
     
     
@@ -37,12 +37,12 @@ module Billing
         f_operation == FISCAL_PERIOD_REPORT
       end
       
-      def set_report_to_accounts
-        self.accounts << origin.accounts.select(&:paid?) if zeroing?
+      def set_report_to_bills
+        self.bills << origin.bills.select(&:paid?) if zeroing?
       end
       
       def update_summary
-        self.payments_sum = accounts.to_a.sum(Money.new(0, 'USD'), &:payments_sum)
+        self.payments_sum = bills.to_a.sum(Money.new(0, 'USD'), &:payments_sum)
         self.payments_cash = payments.select{ |p| p.try(:cash?) }.sum(Money.new(0, 'USD'), &:value)
         self.payments_fiscal = payments.select{ |p| p.try(:fiscal?) }.sum(Money.new(0, 'USD'), &:value)
         perform_fiscal_job
@@ -59,8 +59,8 @@ module Billing
         end
       end
       
-      def partially_paid_accounts?
-        accounts.partially_paid.any?
+      def partially_paid_bills?
+        bills.partially_paid.any?
       end
   end
 end

@@ -11,9 +11,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140729182146) do
+ActiveRecord::Schema.define(version: 20140803073707) do
 
-  create_table "billing_accounts", force: true do |t|
+  create_table "billing_bills", force: true do |t|
     t.integer  "billable_id"
     t.string   "billable_type"
     t.datetime "created_at"
@@ -40,13 +40,13 @@ ActiveRecord::Schema.define(version: 20140729182146) do
     t.datetime "deleted_at"
   end
 
-  add_index "billing_accounts", ["billable_id", "billable_type"], name: "index_billing_accounts_on_billable_id_and_billable_type"
-  add_index "billing_accounts", ["extface_job_id"], name: "index_billing_accounts_on_extface_job_id"
-  add_index "billing_accounts", ["origin_id"], name: "index_billing_accounts_on_origin_id"
-  add_index "billing_accounts", ["report_id"], name: "index_billing_accounts_on_report_id"
+  add_index "billing_bills", ["billable_id", "billable_type"], name: "index_billing_bills_on_billable_id_and_billable_type"
+  add_index "billing_bills", ["extface_job_id"], name: "index_billing_bills_on_extface_job_id"
+  add_index "billing_bills", ["origin_id"], name: "index_billing_bills_on_origin_id"
+  add_index "billing_bills", ["report_id"], name: "index_billing_bills_on_report_id"
 
   create_table "billing_charges", force: true do |t|
-    t.integer  "account_id"
+    t.integer  "bill_id"
     t.integer  "chargable_id"
     t.string   "chargable_type"
     t.integer  "price_cents",    default: 0,     null: false
@@ -62,7 +62,7 @@ ActiveRecord::Schema.define(version: 20140729182146) do
     t.datetime "revenue_at"
   end
 
-  add_index "billing_charges", ["account_id"], name: "index_billing_charges_on_account_id"
+  add_index "billing_charges", ["bill_id"], name: "index_billing_charges_on_bill_id"
   add_index "billing_charges", ["chargable_id", "chargable_type"], name: "index_billing_charges_on_chargable_id_and_chargable_type"
   add_index "billing_charges", ["deleted_at"], name: "index_billing_charges_on_deleted_at"
   add_index "billing_charges", ["origin_id"], name: "index_billing_charges_on_origin_id"
@@ -84,7 +84,7 @@ ActiveRecord::Schema.define(version: 20140729182146) do
   add_index "billing_departments", ["tax_group_id"], name: "index_billing_departments_on_tax_group_id"
 
   create_table "billing_modifiers", force: true do |t|
-    t.integer  "account_id"
+    t.integer  "bill_id"
     t.integer  "charge_id"
     t.decimal  "percent_ratio",        precision: 6, scale: 3
     t.datetime "created_at"
@@ -94,7 +94,7 @@ ActiveRecord::Schema.define(version: 20140729182146) do
     t.datetime "deleted_at"
   end
 
-  add_index "billing_modifiers", ["account_id"], name: "index_billing_modifiers_on_account_id"
+  add_index "billing_modifiers", ["bill_id"], name: "index_billing_modifiers_on_bill_id"
 
   create_table "billing_operators", force: true do |t|
     t.integer  "master_id"
@@ -141,7 +141,7 @@ ActiveRecord::Schema.define(version: 20140729182146) do
   add_index "billing_payment_types", ["deleted_at"], name: "index_billing_payment_types_on_deleted_at"
 
   create_table "billing_payments", force: true do |t|
-    t.integer  "account_id"
+    t.integer  "bill_id"
     t.integer  "value_cents",     default: 0,     null: false
     t.string   "value_currency",  default: "USD", null: false
     t.datetime "created_at"
@@ -156,7 +156,7 @@ ActiveRecord::Schema.define(version: 20140729182146) do
     t.datetime "deleted_at"
   end
 
-  add_index "billing_payments", ["account_id"], name: "index_billing_payments_on_account_id"
+  add_index "billing_payments", ["bill_id"], name: "index_billing_payments_on_bill_id"
   add_index "billing_payments", ["deleted_at"], name: "index_billing_payments_on_deleted_at"
 
   create_table "billing_plus", force: true do |t|
