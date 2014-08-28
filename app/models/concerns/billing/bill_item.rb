@@ -10,8 +10,7 @@ module Billing
       delegate :origins, :payment_types, to: :bill
       
       after_save :bill_save
-      
-      validates_presence_of :bill
+      after_destroy :bill_save
     end
 
   end

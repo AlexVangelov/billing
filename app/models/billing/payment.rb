@@ -43,22 +43,22 @@ module Billing
     
     private
       class << self
-        def args(*args)
+        def wild(*args)
           h = {}
           case when args.blank? || args.first.kind_of?(Hash) then
-            args.blank? ? h : h.merge(*args)
+            new(args.blank? ? h : h.merge(*args))
           when args.first.kind_of?(String) then
               #TODO parse
           else
             h.merge!(payment_type_id: args.shift.to_param)
             if args.any? && (args.first.kind_of?(Hash) || args.first.kind_of?(String))
-              h.merge(args(*args))
+              new(h.merge(args(*args)))
             else
               if args.blank?
-                h
+                new h
               else
                 h.merge!( value: args.shift.to_money )
-                args.any? ? h.merge(*args) : h
+                new(args.any? ? h.merge(*args) : h)
               end
             end
           end

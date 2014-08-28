@@ -31,7 +31,7 @@ Bill text constructor protocol:
 
 ###Charge
 
-    [qty*][price][#PLU][@tax]][+surcharge[%]/-discount[%]][/text]
+    [qty*][price[currency_iso]][#PLU][@tax][+surcharge[%]/-discount[%]][/text]
     
 ###Discount/Surcharge
 

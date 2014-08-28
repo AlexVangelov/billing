@@ -38,7 +38,7 @@ module Billing
       end
       
       def set_report_to_bills
-        self.bills << origin.bills.select(&:paid?) if zeroing?
+        self.bills << origin.bills.for_report if zeroing?
       end
       
       def update_summary

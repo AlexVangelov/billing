@@ -28,6 +28,7 @@ module Billing
     scope :unpaid, -> { where(arel_table[:balance_cents].lt(0)) }
     scope :open, -> { where.not(balance_cents: 0) }
     scope :partially_paid, -> { where.not( payments_sum_cents: 0, balance_cents: 0 ) }
+    scope :for_report, -> { where(balance_cents: 0 ,report_id: nil) }
     
     before_validation :update_sumaries
     
@@ -45,18 +46,15 @@ module Billing
       :payments_of_diff_fiscalization?, :multiple_cash_payments?, if: :has_payments?
     
     def charge(*args)
-      c = charges.new Charge.args(*args)
-      c if c.save
+      charges.wild *args
     end
     
     def modify(*args)
-      m = modifiers.new Modifier.args(*args)
-      m if m.save
+      modifiers.wild *args
     end
     
     def pay(*args)
-      p = build_typed_payment Payment.args(*args)
-      p if p.save
+      payments.wild *args
     end
     
     def modifier_items
@@ -103,12 +101,12 @@ module Billing
         end
       end
       def update_sumaries
-        self.charges_sum = charges.to_a.sum(&:price).to_money
+        self.charges_sum = charges.to_a.sum(&:value).to_money
         calculate_modifiers
-        self.discounts_sum = -@modifier_items.discounts.sum(&:price).to_money
+        self.discounts_sum = @modifier_items.discounts.sum(&:price).to_money
         self.surcharges_sum = @modifier_items.surcharges.sum(&:price).to_money
         self.payments_sum = payments.to_a.sum(&:value).to_money
-        self.total = charges_sum + surcharges_sum - discounts_sum
+        self.total = charges_sum + surcharges_sum + discounts_sum
         self.balance = payments_sum - total
       end
       

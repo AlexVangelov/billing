@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140803073707) do
+ActiveRecord::Schema.define(version: 20140804070517) do
 
   create_table "billing_bills", force: true do |t|
     t.integer  "billable_id"
@@ -49,17 +49,19 @@ ActiveRecord::Schema.define(version: 20140803073707) do
     t.integer  "bill_id"
     t.integer  "chargable_id"
     t.string   "chargable_type"
-    t.integer  "price_cents",    default: 0,     null: false
-    t.string   "price_currency", default: "USD", null: false
+    t.integer  "price_cents",                            default: 0,     null: false
+    t.string   "price_currency",                         default: "USD", null: false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name"
     t.string   "description"
     t.integer  "origin_id"
-    t.integer  "value_cents",    default: 0,     null: false
-    t.string   "value_currency", default: "USD", null: false
+    t.integer  "value_cents",                            default: 0,     null: false
+    t.string   "value_currency",                         default: "USD", null: false
     t.datetime "deleted_at"
     t.datetime "revenue_at"
+    t.decimal  "qty",            precision: 6, scale: 3
+    t.decimal  "tax_ratio",      precision: 6, scale: 3
   end
 
   add_index "billing_charges", ["bill_id"], name: "index_billing_charges_on_bill_id"

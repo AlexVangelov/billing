@@ -6,12 +6,19 @@ module Billing
       @charge = billing_charges(:one)
     end
     
-    test "args_to_attributes class method" do
-      assert_equal Billing::Charge.args(1), { price: '1 USD'.to_money }
-      assert_equal Billing::Charge.args("1"), { price: '1 USD'.to_money }
-      assert_equal Billing::Charge.args("1 EUR"), { price: '1 EUR'.to_money }
-      assert_equal Billing::Charge.args(1, price_currency: 'USD'), { price: '1 USD'.to_money, price_currency: 'USD' }
-      assert_equal Billing::Charge.args(price: 10, price_currency: 'EUR'), { price: 10, price_currency: 'EUR' }
+    test "wild class method" do
+      assert_equal Billing::Charge.wild(1).price, '1 USD'.to_money
+      assert_equal Billing::Charge.wild("1").price, '1 USD'.to_money
+      assert_equal Billing::Charge.wild("1EUR").price, '1 EUR'.to_money
+      assert_equal Billing::Charge.wild('1', price_currency: 'EUR').price, '1 EUR'.to_money
+      assert_equal Billing::Charge.wild(price: 10, price_currency: 'EUR').price, '10 EUR'.to_money
+    end
+    
+    test "string protocol" do
+      charge = Billing::Charge.wild "2.5*3.5##{billing_plus(:one).id}@#{billing_tax_groups(:one).id}+1.5%/Umbrella"
+      assert_equal charge.price, '3.5 USD'.to_money
+      assert_equal charge.name, 'Umbrella'
+      p charge
     end
   end
 end
