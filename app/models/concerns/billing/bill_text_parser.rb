@@ -10,7 +10,7 @@ module Billing
     end
     
     def parse_text(text)
-      p text
+      #p text
       text[1..-1] if text
     end
 

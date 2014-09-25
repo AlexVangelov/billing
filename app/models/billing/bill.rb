@@ -30,9 +30,11 @@ module Billing
     scope :partially_paid, -> { where.not( payments_sum_cents: 0, balance_cents: 0 ) }
     scope :for_report, -> { where(balance_cents: 0 ,report_id: nil) }
     
-    before_validation :update_sumaries
-    
-    before_save on: :create do
+    before_validation do
+      update_sumaries
+      self.origin = payments.first.try(:origin) unless origin.present? or payments.many?
+    end
+    before_create do
       self.number = "#{billable.id}:#{billable.billing_bills.count}"
       self.name = "B:#{number}" if name.nil?
     end
@@ -89,24 +91,29 @@ module Billing
 
     private
       def calculate_modifiers
+        charges_a = charges.to_a
         @modifier_items = ModifierItems.new.tap() do |items|
-          modifiers.each do |modifier|
-            if charge = modifier.charge
-              charge.value = modifier.percent_ratio.nil? ? modifier.fixed_value : (charge.price * modifier.percent_ratio)
-              items << Charge.new(price: charge.value, chargable: charge)
-            else
-              items << Charge.new(price: modifier.percent_ratio.nil? ? modifier.fixed_value : (charges.to_a.sum(&:price).to_money * modifier.percent_ratio))
-            end
+          modifiers.select{ |m| m.charge.present? }.each do |charge_modifier|
+            charge = charges_a.find{ |c| c == charge_modifier.charge }
+            mod_value = charge_modifier.percent_ratio.nil? ? charge_modifier.fixed_value : (charge_modifier.charge.price * charge_modifier.percent_ratio)
+            p mod_value
+            charge.value = charge.price + mod_value
+            #p charge.value
+            #p "-"
+            items << Charge.new(price: mod_value, chargable: charge)
+          end
+          modifiers.select{ |m| m.charge.nil? }.each do |global_modifier|
+            items << Charge.new(price: global_modifier.percent_ratio.nil? ? global_modifier.fixed_value : (charges_a.sum(&:value).to_money * global_modifier.percent_ratio))
           end
         end
       end
       def update_sumaries
-        self.charges_sum = charges.to_a.sum(&:value).to_money
         calculate_modifiers
-        self.discounts_sum = @modifier_items.discounts.sum(&:price).to_money
-        self.surcharges_sum = @modifier_items.surcharges.sum(&:price).to_money
-        self.payments_sum = payments.to_a.sum(&:value).to_money
-        self.total = charges_sum + surcharges_sum + discounts_sum
+        self.charges_sum = charges.to_a.sum(0.to_money, &:value).to_money
+        self.discounts_sum = @modifier_items.discounts.sum(0.to_money, &:price).to_money
+        self.surcharges_sum = @modifier_items.surcharges.sum(0.to_money, &:price).to_money
+        self.payments_sum = payments.to_a.sum(0.to_money, &:value).to_money
+        self.total = charges.to_a.sum(0.to_money, &:price) + surcharges_sum + discounts_sum
         self.balance = payments_sum - total
       end
       
@@ -139,5 +146,6 @@ module Billing
       def fiscalizable?
         payments.select(&:fiscal?).any?
       end
+
   end
 end

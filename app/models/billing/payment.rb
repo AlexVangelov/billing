@@ -29,10 +29,6 @@ module Billing
       self.value = -bill.try(:balance) if value.zero?
     end
     
-    before_validation do
-      bill.origin = origin unless bill.origin and bill.payments.many? #FIXME change direction down
-    end
-    
     def fiscal?; false; end
     def cash?; false; end
     def external?; false; end
@@ -43,22 +39,22 @@ module Billing
     
     private
       class << self
-        def wild(*args)
+        def wild_args(*args)
           h = {}
           case when args.blank? || args.first.kind_of?(Hash) then
-            new(args.blank? ? h : h.merge(*args))
+            args.blank? ? h : h.merge(*args)
           when args.first.kind_of?(String) then
               #TODO parse
           else
             h.merge!(payment_type_id: args.shift.to_param)
             if args.any? && (args.first.kind_of?(Hash) || args.first.kind_of?(String))
-              new(h.merge(args(*args)))
+              h.merge(args(*args))
             else
               if args.blank?
-                new h
+                h
               else
                 h.merge!( value: args.shift.to_money )
-                new(args.any? ? h.merge(*args) : h)
+                args.any? ? h.merge(*args) : h
               end
             end
           end

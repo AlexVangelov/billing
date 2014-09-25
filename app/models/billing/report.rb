@@ -23,6 +23,8 @@ module Billing
     before_validation :set_report_to_bills
     before_create :update_summary
     
+    scope :in_period, lambda {|from, to| where(created_at: from..to) }
+    
     
     def fiscalization
       if origin.fiscal_device.present?
@@ -43,8 +45,8 @@ module Billing
       
       def update_summary
         self.payments_sum = bills.to_a.sum(Money.new(0, 'USD'), &:payments_sum)
-        self.payments_cash = payments.select{ |p| p.try(:cash?) }.sum(Money.new(0, 'USD'), &:value)
-        self.payments_fiscal = payments.select{ |p| p.try(:fiscal?) }.sum(Money.new(0, 'USD'), &:value)
+        self.payments_cash = bills.collect(&:payments).flatten.select{ |p| p.try(:cash?) }.sum(Money.new(0, 'USD'), &:value)
+        self.payments_fiscal = bills.collect(&:payments).flatten.select{ |p| p.try(:fiscal?) }.sum(Money.new(0, 'USD'), &:value)
         perform_fiscal_job
       end
       

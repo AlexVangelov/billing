@@ -21,28 +21,28 @@ module Billing
     validates_presence_of :price
     validates_numericality_of :value, greater_than_or_equal_to: 0
     
-    before_save do
+    after_initialize do
       self.value = price #unless modifier.present? #bill validation will update modified value
     end
     
     class << self
       include Billing::BillTextParser
-      def wild(*args)
+      def wild_args(*args)
         case when args.blank? || args.first.is_a?(Hash) then
-          new(*args)
+          return {}.merge(*args)
         when args.size == 1 && args.first.is_a?(String) then
           if match = args.shift.match(/(\d+[.,]\d+\*|\d+\*|)(\d+[.,]\d+[A-Z]*|\d+[A-Z]*|)(#\d+|)(@\d+|)([+-]\d+[.,]\d+\%?|[+-]\d+\%?|)(\/\S+|)/)
             qty_s, price_s, plu_s, tax_group_s, mod_s, text = match.captures
-            new(
+            return {
               qty: parse_qty(qty_s),
               price: price_s.to_money,
               plu: parse_plu(plu_s),
               name: parse_text(text)
-            )
+            }
           end
         else
           h = { price: args.shift.to_money }
-          new(args.any? ? h.merge(*args) : h)
+          return args.any? ? h.merge(*args) : h
         end
       end
     end

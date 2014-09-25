@@ -16,9 +16,9 @@ module Billing
       end
       
     class << self
-      def wild(*args)
+      def wild_args(*args)
         case when args.blank? || args.first.kind_of?(Hash) then
-          new {}.merge(*args)
+          {}.merge(*args)
         when args.first.kind_of?(String) then
           d = args.shift
           if d.index('%')
@@ -26,7 +26,7 @@ module Billing
           end
         else
           h = { fixed_value: args.shift.to_money }
-          new(args.any? ? h.merge(*args) : h)
+          args.any? ? h.merge(*args) : h
         end
       end
     end
