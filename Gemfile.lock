@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    billing (0.0.4b)
+    billing (0.0.4c)
       money-rails
       paper_trail
       rails (>= 4.0.5)
@@ -45,7 +45,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.25.1)
-    minitest (5.4.0)
+    minitest (5.4.1)
     monetize (0.3.0)
       money (~> 6.1.0.beta1)
     money (6.1.1)
@@ -95,7 +95,7 @@ GEM
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-    tzinfo (1.2.1)
+    tzinfo (1.2.2)
       thread_safe (~> 0.1)
 
 PLATFORMS

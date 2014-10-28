@@ -3,7 +3,8 @@ module Billing
     FISCAL_X_REPORT = 'x_report'.freeze
     FISCAL_Z_REPORT = 'z_report'.freeze
     FISCAL_PERIOD_REPORT = 'period_report'.freeze
-    F_OPERATIONS = [FISCAL_X_REPORT, FISCAL_Z_REPORT, FISCAL_PERIOD_REPORT].freeze
+    FISCAL_PAYED_RECVD = 'payed_recvd'.freeze
+    F_OPERATIONS = [FISCAL_X_REPORT, FISCAL_Z_REPORT, FISCAL_PERIOD_REPORT, FISCAL_PAYED_RECVD].freeze
       
     has_paper_trail class_name: 'Billing::Version'
     belongs_to :origin, inverse_of: :reports
@@ -14,11 +15,13 @@ module Billing
     monetize :payments_sum_cents
     monetize :payments_cash_cents
     monetize :payments_fiscal_cents
+    monetize :f_amount_cents
     
     validates_presence_of :origin
     validates_absence_of :partially_paid_bills?
     validates :f_operation, inclusion: { in: F_OPERATIONS }, allow_nil: true
     validates_presence_of :f_period_from, :f_period_to, if: :fiscal_period_report?
+    validates_presence_of :f_amount, if: :fiscal_payed_recvd?
     
     before_validation :set_report_to_bills
     before_create :update_summary
@@ -37,6 +40,10 @@ module Billing
     
       def fiscal_period_report?
         f_operation == FISCAL_PERIOD_REPORT
+      end
+      
+      def fiscal_payed_recvd?
+        f_operation == FISCAL_PAYED_RECVD
       end
       
       def set_report_to_bills
@@ -58,6 +65,8 @@ module Billing
           self.extface_job = origin.fiscal_device.driver.x_report_session
         when FISCAL_PERIOD_REPORT then
           p "period"
+        when FISCAL_PAYED_RECVD then
+          self.extface_job = origin.fiscal_device.driver.payed_recv_account(f_amount.to_f)
         end
       end
       

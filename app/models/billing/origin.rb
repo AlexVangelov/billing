@@ -5,6 +5,7 @@ module Billing
     has_many :payments, through: :bills
     if defined? Extface
       belongs_to :fiscal_device, ->(o) { where( extfaceable_id: o.master_id ) }, class_name: 'Extface::Device'
+      belongs_to :transfer_device, ->(o) { where( extfaceable_id: o.master_id ) }, class_name: 'Extface::Device'
     end
 
     validates_presence_of :name
@@ -12,6 +13,10 @@ module Billing
     
     def external_payment?
       payment_model != Payment::PAYMENT_WITH_TYPE
+    end
+    
+    def room_transfer?
+      payment_model == Payment::ROOM_TRANSFER
     end
   end
 end

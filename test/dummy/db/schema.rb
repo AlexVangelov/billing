@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140804070517) do
+ActiveRecord::Schema.define(version: 20141027235427) do
 
   create_table "billing_bills", force: true do |t|
     t.integer  "billable_id"
@@ -120,11 +120,13 @@ ActiveRecord::Schema.define(version: 20140804070517) do
     t.boolean  "banned"
     t.datetime "deleted_at"
     t.string   "type"
-    t.string   "payment_model",    default: "Billing::PaymentWithType"
+    t.string   "payment_model",      default: "Billing::PaymentWithType"
+    t.integer  "transfer_device_id"
   end
 
   add_index "billing_origins", ["deleted_at"], name: "index_billing_origins_on_deleted_at"
   add_index "billing_origins", ["fiscal_device_id"], name: "index_billing_origins_on_fiscal_device_id"
+  add_index "billing_origins", ["transfer_device_id"], name: "index_billing_origins_on_transfer_device_id"
 
   create_table "billing_payment_types", force: true do |t|
     t.string   "name"
@@ -215,6 +217,8 @@ ActiveRecord::Schema.define(version: 20140804070517) do
     t.date     "f_period_to"
     t.boolean  "zeroing"
     t.string   "f_operation"
+    t.integer  "f_amount_cents",           default: 0,     null: false
+    t.string   "f_amount_currency",        default: "USD", null: false
   end
 
   add_index "billing_reports", ["origin_id"], name: "index_billing_reports_on_origin_id"
