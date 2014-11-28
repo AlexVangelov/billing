@@ -21,13 +21,13 @@ module Billing
       belongs_to :extface_job, class_name: 'Extface::Job'
     end
     
-    delegate :billable, to: :bill
+    delegate :billable, to: :bill, allow_nil: true
 
     validates_numericality_of :value, greater_than_or_equal_to: 0
     validates :type, inclusion: { in: PAYMENT_MODELS }
     
     after_initialize on: :create do
-      self.value = -bill.try(:balance) if value.zero?
+      self.value = -bill.try(:balance) if bill && value.zero?
     end
     
     def fiscal?; false; end

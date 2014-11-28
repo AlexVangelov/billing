@@ -2,6 +2,8 @@ module Billing
   class PaymentWithType < Payment
     belongs_to :payment_type, inverse_of: :payments
     
+    delegate :fiscal?, :cash?, to: :payment_type
+    
     validates_presence_of :payment_type
     validates :payment_type, inclusion: { in: :payment_types }
     
@@ -9,20 +11,12 @@ module Billing
       self.payment_type = default_payment_type unless payment_type
     end
     
-    def fiscal?
-      payment_type.fiscal
-    end
-    
-    def cash?
-      payment_type.cash
-    end
-    
     private
       def default_payment_type
         if pt = billable.try(:default_payment_type)
           pt
         else
-          bill.payment_types.try(:first) unless bill.payment_types.many?
+          bill.try(:payment_types).try(:first) unless bill.try(:payment_types).try(:many?)
         end
       end
     

@@ -21,6 +21,7 @@ module Billing
     validates_absence_of :partially_paid_bills?
     validates :f_operation, inclusion: { in: F_OPERATIONS }, allow_nil: true
     validates_presence_of :f_period_from, :f_period_to, if: :fiscal_period_report?
+    validates_inclusion_of :positive_f_period?, in: [true], if: :fiscal_period_report?
     validates_presence_of :f_amount, if: :fiscal_payed_recvd?
     
     before_validation :set_report_to_bills
@@ -64,7 +65,7 @@ module Billing
         when FISCAL_X_REPORT then
           self.extface_job = origin.fiscal_device.driver.x_report_session
         when FISCAL_PERIOD_REPORT then
-          p "period"
+          self.extface_job = origin.fiscal_device.driver.period_report_session(f_period_from, f_period_to, f_detailed)
         when FISCAL_PAYED_RECVD then
           self.extface_job = origin.fiscal_device.driver.payed_recv_account(f_amount.to_f)
         end
@@ -72,6 +73,10 @@ module Billing
       
       def partially_paid_bills?
         bills.partially_paid.any?
+      end
+      
+      def positive_f_period?
+        f_period_from < f_period_to if f_period_from && f_period_to
       end
   end
 end

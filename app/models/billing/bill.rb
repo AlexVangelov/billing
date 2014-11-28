@@ -85,8 +85,8 @@ module Billing
     end
     
     def fiscalize #TODO test
-      extface_job = origin.fiscal_device.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
-      extface_job if save
+      self.extface_job = origin.fiscal_device.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
+      self.extface_job if save
     end
 
     private
