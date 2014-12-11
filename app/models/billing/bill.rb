@@ -96,7 +96,6 @@ module Billing
           modifiers.select{ |m| m.charge.present? }.each do |charge_modifier|
             charge = charges_a.find{ |c| c == charge_modifier.charge }
             mod_value = charge_modifier.percent_ratio.nil? ? charge_modifier.fixed_value : (charge_modifier.charge.price * charge_modifier.percent_ratio)
-            p mod_value
             charge.value = charge.price + mod_value
             #p charge.value
             #p "-"

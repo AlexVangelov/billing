@@ -2,7 +2,7 @@ module Billing
   class PaymentWithType < Payment
     belongs_to :payment_type, inverse_of: :payments
     
-    delegate :fiscal?, :cash?, to: :payment_type
+    delegate :fiscal?, :cash?, to: :payment_type, allow_nil: true
     
     validates_presence_of :payment_type
     validates :payment_type, inclusion: { in: :payment_types }
