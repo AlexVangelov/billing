@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141027235427) do
+ActiveRecord::Schema.define(version: 20141221233912) do
 
   create_table "billing_bills", force: true do |t|
     t.integer  "billable_id"
@@ -97,6 +97,17 @@ ActiveRecord::Schema.define(version: 20141027235427) do
   end
 
   add_index "billing_modifiers", ["bill_id"], name: "index_billing_modifiers_on_bill_id"
+
+  create_table "billing_op_fp_mappings", force: true do |t|
+    t.integer  "operator_id"
+    t.integer  "extface_driver_id"
+    t.integer  "mapping"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "billing_op_fp_mappings", ["extface_driver_id"], name: "index_billing_op_fp_mappings_on_extface_driver_id"
+  add_index "billing_op_fp_mappings", ["operator_id"], name: "index_billing_op_fp_mappings_on_operator_id"
 
   create_table "billing_operators", force: true do |t|
     t.integer  "master_id"
@@ -234,6 +245,17 @@ ActiveRecord::Schema.define(version: 20141027235427) do
     t.string   "type"
     t.datetime "deleted_at"
   end
+
+  create_table "billing_tg_fp_mappings", force: true do |t|
+    t.integer  "tax_group_id"
+    t.integer  "extface_driver_id"
+    t.integer  "mapping"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "billing_tg_fp_mappings", ["extface_driver_id"], name: "index_billing_tg_fp_mappings_on_extface_driver_id"
+  add_index "billing_tg_fp_mappings", ["tax_group_id"], name: "index_billing_tg_fp_mappings_on_tax_group_id"
 
   create_table "billing_versions", force: true do |t|
     t.string   "item_type",  null: false
