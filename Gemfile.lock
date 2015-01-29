@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    billing (0.0.5a)
+    billing (0.0.5b)
       money-rails
       paper_trail
       rails (>= 4.0.5)
@@ -40,16 +40,16 @@ GEM
     erubis (2.7.0)
     hike (1.2.3)
     i18n (0.6.11)
-    json (1.8.1)
+    json (1.8.2)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     mime-types (2.4.3)
-    minitest (5.4.3)
+    minitest (5.5.0)
     monetize (1.0.0)
       money (~> 6.4.0)
     money (6.4.0)
       i18n (>= 0.6.4, <= 0.7.0.beta1)
-    money-rails (1.0.0)
+    money-rails (1.1.0)
       activesupport (>= 3.0)
       monetize (~> 1.0.0)
       money (~> 6.4.0)
@@ -59,7 +59,7 @@ GEM
       activerecord (>= 3.0, < 5.0)
       activesupport (>= 3.0, < 5.0)
     rack (1.5.2)
-    rack-test (0.6.2)
+    rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.1.8)
       actionmailer (= 4.1.8)

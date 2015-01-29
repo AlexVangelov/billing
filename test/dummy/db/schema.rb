@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141221233912) do
+ActiveRecord::Schema.define(version: 20141229234928) do
 
   create_table "billing_bills", force: true do |t|
     t.integer  "billable_id"
@@ -233,6 +233,17 @@ ActiveRecord::Schema.define(version: 20141221233912) do
   end
 
   add_index "billing_reports", ["origin_id"], name: "index_billing_reports_on_origin_id"
+
+  create_table "billing_resources", force: true do |t|
+    t.integer  "master_id"
+    t.string   "name"
+    t.text     "properties"
+    t.boolean  "banned"
+    t.string   "type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.datetime "deleted_at"
+  end
 
   create_table "billing_tax_groups", force: true do |t|
     t.string   "name"
