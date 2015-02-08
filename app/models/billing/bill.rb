@@ -84,8 +84,8 @@ module Billing
       payments.new(attributes.merge(type: (payment_origin || origin).try(:payment_model) || 'Billing::PaymentWithType'))
     end
     
-    def fiscalize #TODO test
-      self.extface_job = origin.fiscal_device.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
+    def fiscalize(detailed = false)
+      self.extface_job = origin.fiscal_device.driver(self) if fiscalizable? && origin.try(:fiscal_device)
       self.extface_job if save
     end
 
@@ -136,7 +136,7 @@ module Billing
         if autofin
           self.finalized_at = Time.now
           if defined? Extface
-            self.extface_job = origin.fiscal_device.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
+            self.extface_job = origin.fiscal_device.driver.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
           end
         end
         true
