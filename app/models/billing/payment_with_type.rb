@@ -11,6 +11,10 @@ module Billing
       self.payment_type = default_payment_type unless payment_type
     end
     
+    def find_payment_type_mapping_for(fiscal_driver)
+      payment_type.payment_type_fiscal_driver_mappings.find_by(extface_driver_id: fiscal_driver.id).try(:mapping) if fiscal_driver.fiscal?
+    end
+    
     private
       def default_payment_type
         if pt = billable.try(:default_payment_type)

@@ -5,6 +5,8 @@ module Billing
     belongs_to :charge, inverse_of: :modifier
     monetize :fixed_value_cents
     
+    scope :global, -> { where(charge_id: nil) }
+    
     validate :percent_or_value
     validates_uniqueness_of :charge, scope: :bill_id, allow_nil: true
     validates_uniqueness_of :bill, scope: :charge_id

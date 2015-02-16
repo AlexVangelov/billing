@@ -71,6 +71,10 @@ module Billing
       billable.try(:billing_origins) #|| Billing::Origin.all
     end
     
+    def tax_groups
+      billable.try(:tax_groups)
+    end
+    
     def has_payments?
       payments.any?
     end
@@ -87,6 +91,16 @@ module Billing
     def fiscalize(detailed = false)
       self.extface_job = origin.fiscal_device.driver(self) if fiscalizable? && origin.try(:fiscal_device)
       self.extface_job if save
+    end
+    
+    def global_modifier_value
+      if global_modifiers = modifiers.select{ |m| m.charge.nil? }
+        Money.new(0).tap() do |value|
+          global_modifiers.each do |global_modifier|
+            value += global_modifier.percent_ratio.nil? ? global_modifier.fixed_value : (charges_a.sum(&:value).to_money * global_modifier.percent_ratio)
+          end
+        end if global_modifiers.any?
+      end
     end
 
     private

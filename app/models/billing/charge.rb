@@ -25,6 +25,13 @@ module Billing
       self.value = price #unless modifier.present? #bill validation will update modified value
     end
     
+    def find_tax_group_mapping_for(fiscal_driver) # optimize and remove me!
+      if tax_groups.present? && fiscal_driver.fiscal? #if billable provides tax groups (delegate)
+        tax_group = tax_groups.find_by(percent_ratio: tax_ratio)
+        tax_group.tax_group_fiscal_driver_mappings.find_by(extface_driver_id: fiscal_driver.id).try(:mapping) if tax_group
+      end
+    end
+    
     class << self
       include Billing::BillTextParser
       def wild_args(*args)
