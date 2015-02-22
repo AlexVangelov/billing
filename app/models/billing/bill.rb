@@ -89,7 +89,7 @@ module Billing
     end
     
     def fiscalize(detailed = false)
-      self.extface_job = origin.fiscal_device.driver(self) if fiscalizable? && origin.try(:fiscal_device)
+      self.extface_job = origin.fiscal_device.driver.fiscalize(self, detailed) if fiscalizable? && origin.try(:fiscal_device)
       self.extface_job if save
     end
     
