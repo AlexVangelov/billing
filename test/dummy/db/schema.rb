@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141229234928) do
+ActiveRecord::Schema.define(version: 20150311013019) do
 
   create_table "billing_bills", force: true do |t|
     t.integer  "billable_id"
@@ -104,6 +104,7 @@ ActiveRecord::Schema.define(version: 20141229234928) do
     t.integer  "mapping"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "pwd"
   end
 
   add_index "billing_op_fp_mappings", ["extface_driver_id"], name: "index_billing_op_fp_mappings_on_extface_driver_id"

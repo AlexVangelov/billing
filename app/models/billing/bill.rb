@@ -102,6 +102,11 @@ module Billing
         end if global_modifiers.any?
       end
     end
+    
+    def find_operator_mapping_for(fiscal_driver)
+      # get operator, who close/pay the bill?
+      #operator.operator_fiscal_driver_mapping.find_by(extface_driver_id: fiscal_driver.id) if fiscal_driver.fiscal?
+    end
 
     private
       def calculate_modifiers
