@@ -64,11 +64,11 @@ module Billing
     end
     
     def payment_types
-      billable.try(:billing_payment_types) #|| Billing::PaymentType.all
+      billable.try(:billing_payment_types) || billable.try(:payment_types) #|| Billing::PaymentType.all #FIXME
     end
     
     def origins
-      billable.try(:billing_origins) #|| Billing::Origin.all
+      billable.try(:billing_origins) || billable.try(:origins) #|| Billing::Origin.all #FIXME
     end
     
     def tax_groups
