@@ -1,3 +1,3 @@
 module Billing
-  VERSION = "0.0.6a"
+  VERSION = "0.0.7"
 end
