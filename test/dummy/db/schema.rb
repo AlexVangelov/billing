@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150510142229) do
+ActiveRecord::Schema.define(version: 20150512040421) do
 
   create_table "billing_bills", force: :cascade do |t|
     t.integer  "billable_id"
@@ -231,6 +231,7 @@ ActiveRecord::Schema.define(version: 20150510142229) do
     t.string   "f_operation",              limit: 255
     t.integer  "f_amount_cents",                       default: 0,     null: false
     t.string   "f_amount_currency",        limit: 255, default: "USD", null: false
+    t.datetime "deleted_at"
   end
 
   add_index "billing_reports", ["origin_id"], name: "index_billing_reports_on_origin_id"
@@ -279,6 +280,8 @@ ActiveRecord::Schema.define(version: 20150510142229) do
     t.string   "ip",             limit: 255
     t.string   "user_agent",     limit: 255
     t.text     "object_changes"
+    t.integer  "master_id"
+    t.string   "master_type"
   end
 
   add_index "billing_versions", ["item_type", "item_id"], name: "index_billing_versions_on_item_type_and_item_id"
