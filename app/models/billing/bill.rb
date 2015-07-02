@@ -94,12 +94,13 @@ module Billing
     end
     
     def global_modifier_value
-      if global_modifiers = modifiers.select{ |m| m.charge.nil? }
-        Money.new(0).tap() do |value|
-          global_modifiers.each do |global_modifier|
-            value += global_modifier.percent_ratio.nil? ? global_modifier.fixed_value : (charges_a.sum(&:value).to_money * global_modifier.percent_ratio)
-          end
-        end if global_modifiers.any?
+      global_modifiers = modifiers.select{ |m| m.charge.nil? }
+      if global_modifiers.any?
+        gvalue = Money.new(0)
+        global_modifiers.each do |global_modifier|
+          gvalue += global_modifier.percent_ratio.nil? ? global_modifier.fixed_value : (charges_a.sum(&:value).to_money * global_modifier.percent_ratio)
+        end
+        return gvalue
       end
     end
     

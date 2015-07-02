@@ -6,7 +6,7 @@ module Billing
     FISCAL_PAYED_RECVD = 'payed_recvd'.freeze
     F_OPERATIONS = [FISCAL_X_REPORT, FISCAL_Z_REPORT, FISCAL_PERIOD_REPORT, FISCAL_PAYED_RECVD].freeze
 
-    acts_as_paranoid
+    acts_as_paranoid if respond_to?(:acts_as_paranoid)
     has_paper_trail class_name: 'Billing::Version'
     belongs_to :origin, inverse_of: :reports
     has_many :bills, inverse_of: :report, autosave: true
