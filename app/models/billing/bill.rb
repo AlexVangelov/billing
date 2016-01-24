@@ -93,6 +93,11 @@ module Billing
       #TODO create resque job
       #self.extface_job = origin.fiscal_device.driver.fiscalize(self, detailed) if fiscalizable? && origin.try(:fiscal_device)
       #self.extface_job if save
+      if defined?(Extface) && fiscalizable? && device = origin.try(:fiscal_device)
+        #self.extface_job = origin.fiscal_device.driver.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
+        self.extface_job = device.jobs.new
+        self.extface_job if save
+      end
     end
     
     def global_modifier_value
