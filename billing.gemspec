@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency "rails", ">= 4.0.5"
   s.add_dependency "money-rails"
   s.add_dependency "paper_trail"
+  s.add_dependency "resque"
   
   s.add_development_dependency "sqlite3"
 end

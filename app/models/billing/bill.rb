@@ -39,6 +39,7 @@ module Billing
       self.name = "B:#{number}" if name.nil?
     end
     before_save :perform_autofin, if: :becomes_paid?
+    after_save :create_fiscal_job, if: :fiscalizable?
     
     validates_numericality_of :total, greater_than_or_equal_to: 0
     validates_numericality_of :balance, less_than_or_equal_to: 0
@@ -89,8 +90,9 @@ module Billing
     end
     
     def fiscalize(detailed = false)
-      self.extface_job = origin.fiscal_device.driver.fiscalize(self, detailed) if fiscalizable? && origin.try(:fiscal_device)
-      self.extface_job if save
+      #TODO create resque job
+      #self.extface_job = origin.fiscal_device.driver.fiscalize(self, detailed) if fiscalizable? && origin.try(:fiscal_device)
+      #self.extface_job if save
     end
     
     def global_modifier_value
@@ -107,6 +109,10 @@ module Billing
     def find_operator_mapping_for(fiscal_driver)
       # get operator, who close/pay the bill?
       #operator.operator_fiscal_driver_mapping.find_by(extface_driver_id: fiscal_driver.id) if fiscal_driver.fiscal?
+    end
+    
+    def fiscalizable?
+      self.finalized_at.present? && payments.select(&:fiscal?).any? && origin.try(:fiscal_device) && balance.zero?
     end
 
     private
@@ -153,17 +159,26 @@ module Billing
       end
       
       def perform_autofin
+        p "!!!!!!!!!!perform_autofin"
         if autofin
           self.finalized_at = Time.now
-          if defined? Extface
-            self.extface_job = origin.fiscal_device.driver.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
+          if defined?(Extface) && fiscalizable? && device = origin.try(:fiscal_device)
+            #self.extface_job = origin.fiscal_device.driver.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
+            self.extface_job = device.jobs.new
           end
         end
         true
       end
       
-      def fiscalizable?
-        payments.select(&:fiscal?).any?
+      def create_fiscal_job
+        if self.extface_job_id_changed? && defined?(Resque) && defined?(Extface) && device = origin.try(:fiscal_device)
+          p "device: #{device.try(:id)}"
+          p "self: #{self.try(:id)}"
+          p "self.finalized_at changed: #{self.finalized_at_changed?}"
+          
+          Resque.enqueue_to("extface_#{device.id}", Billing::IssueFiscalDoc, self.id)
+        end
+        true
       end
 
   end
