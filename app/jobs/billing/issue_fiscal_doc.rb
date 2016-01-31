@@ -27,6 +27,10 @@ module Resque
         return false if Resque.redis.get(key).to_i > now
         return true  if Resque.redis.getset(key, timeout).to_i <= now
         return false
+      rescue ActiveRecord::RecordNotFound #redis_key exception
+        p "Not found!!!"
+        sleep 1
+        reenqueue(*args) #will stop if new redis_key exception
       end
 
       def unlock_queue(*args)
