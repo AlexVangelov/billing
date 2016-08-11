@@ -6,6 +6,7 @@ module Billing
     if defined? Extface
       belongs_to :fiscal_device, ->(o) { where( extfaceable_id: o.master_id ) }, class_name: 'Extface::Device'
       belongs_to :transfer_device, ->(o) { where( extfaceable_id: o.master_id ) }, class_name: 'Extface::Device'
+      belongs_to :print_device, ->(o) { where( extfaceable_id: o.master_id ) }, class_name: 'Extface::Device'
     end
 
     validates_presence_of :name

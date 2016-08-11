@@ -19,6 +19,7 @@ module Billing
     
     if defined? Extface
       belongs_to :extface_job, class_name: 'Extface::Job'
+      belongs_to :print_job, class_name: 'Extface::Job'
     end
     
     accepts_nested_attributes_for :charges, :modifiers, :payments
@@ -40,6 +41,7 @@ module Billing
     end
     before_save :perform_autofin, if: :becomes_paid?
     after_save :create_fiscal_job, if: :fiscalizable?
+    after_save :create_print_job, if: :printable?
     
     validates_numericality_of :total, greater_than_or_equal_to: 0
     validates_numericality_of :balance, less_than_or_equal_to: 0
@@ -119,6 +121,10 @@ module Billing
     def fiscalizable?
       self.finalized_at.present? && payments.select(&:fiscal?).any? && origin.try(:fiscal_device) && balance.zero?
     end
+    
+    def printable?
+      origin.print_device.present?
+    end
 
     private
       def calculate_modifiers
@@ -171,6 +177,10 @@ module Billing
             #self.extface_job = origin.fiscal_device.driver.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
             self.extface_job = device.jobs.new
           end
+          if defined?(Extface) && printable? && print_device = origin.try(:print_device)
+            #self.extface_job = origin.fiscal_device.driver.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
+            self.print_job = print_device.jobs.new
+          end
         end
         true
       end
@@ -186,5 +196,13 @@ module Billing
         true
       end
 
+      def create_print_job
+        if self.print_job_id_changed? && defined?(Resque) && defined?(Extface) && print_device = origin.try(:print_device)
+          p "################ vprint device: #{print_device.try(:id)}"
+          p "self: #{self.try(:id)}"
+          Resque.enqueue_to("extface_#{print_device.id}", Billing::IssuePrintDoc, self.id)
+        end
+        true
+      end
   end
 end
