@@ -11,6 +11,10 @@ module Billing
     validates_uniqueness_of :charge, scope: :bill_id, allow_nil: true
     validates_uniqueness_of :bill, scope: :charge_id
     
+    def human
+      percent_ratio.nil? ? fixed_value : "#{(percent_ratio * 100).to_i}%" 
+    end
+    
     private
       def percent_or_value
         errors.add :percent_or_value, I18n.t('errors.messages.blank') if percent_ratio.blank? and fixed_value.zero?

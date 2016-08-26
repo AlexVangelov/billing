@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    billing (0.0.8a)
+    billing (0.0.9)
       money-rails
       paper_trail
       rails (>= 4.0.5)

@@ -107,7 +107,7 @@ module Billing
       if global_modifiers.any?
         gvalue = Money.new(0)
         global_modifiers.each do |global_modifier|
-          gvalue += global_modifier.percent_ratio.nil? ? global_modifier.fixed_value : (charges_a.sum(&:value).to_money * global_modifier.percent_ratio)
+          gvalue += global_modifier.percent_ratio.nil? ? global_modifier.fixed_value : (charges.to_a.sum(0.to_money, &:value).to_money * global_modifier.percent_ratio)
         end
         return gvalue
       end

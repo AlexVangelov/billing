@@ -30,9 +30,15 @@ module Billing
         
         bill.charges.each do |charge|
           s.print "#{charge.name.ljust(22)} #{charge.value.to_s.rjust(7)}\r\n"
+          if charge.modifier.present?
+            s.print "  Item modifier:     #{charge.modifier.human.to_s.rjust(7)}\r\n"
+          end
+        end
+        if bill.modifiers.any?
+          s.print "  Global modifier:   #{bill.global_modifier_value.to_s.rjust(7)}\r\n"
         end
         s.print "-----------\r\n".rjust(32)
-        s.print "#{bill.total}\r\n".rjust(32)
+        s.print "TOTAL:    #{bill.total.to_s.rjust(20)}\r\n"
         
         # s.print "..............................\r\n"
         # bill.payments.each do |payment|
