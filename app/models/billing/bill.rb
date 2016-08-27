@@ -2,7 +2,9 @@ module Billing
   class Bill < ActiveRecord::Base
     acts_as_paranoid if respond_to?(:acts_as_paranoid)
     has_paper_trail class_name: 'Billing::Version' if respond_to?(:has_paper_trail)
-      
+    
+    attr_accessor :perform_print, :perform_fiscalize
+
     monetize :charges_sum_cents
     monetize :discounts_sum_cents
     monetize :surcharges_sum_cents
@@ -40,8 +42,8 @@ module Billing
       self.name = "B:#{number}" if name.nil?
     end
     before_save :perform_autofin, if: :becomes_paid?
-    after_save :create_fiscal_job, if: :fiscalizable?
-    after_save :create_print_job, if: :printable?
+    after_commit :create_fiscal_job, on: [ :create, :update ]
+    after_commit :create_print_job, on: [ :create, :update ]
     
     validates_numericality_of :total, greater_than_or_equal_to: 0
     validates_numericality_of :balance, less_than_or_equal_to: 0
@@ -134,8 +136,6 @@ module Billing
             charge = charges_a.find{ |c| c == charge_modifier.charge }
             mod_value = charge_modifier.percent_ratio.nil? ? charge_modifier.fixed_value : (charge_modifier.charge.price * charge_modifier.percent_ratio)
             charge.value = charge.price + mod_value
-            #p charge.value
-            #p "-"
             items << Charge.new(price: mod_value, chargable: charge)
           end
           modifiers.select{ |m| m.charge.nil? }.each do |global_modifier|
@@ -145,7 +145,7 @@ module Billing
       end
       def update_sumaries
         calculate_modifiers
-        self.charges_sum = charges.to_a.sum(0.to_money, &:value).to_money
+        self.charges_sum = charges.to_a.sum(0.to_money, &:price).to_money
         self.discounts_sum = @modifier_items.discounts.sum(0.to_money, &:price).to_money
         self.surcharges_sum = @modifier_items.surcharges.sum(0.to_money, &:price).to_money
         self.payments_sum = payments.to_a.sum(0.to_money, &:value).to_money
@@ -170,38 +170,33 @@ module Billing
       end
       
       def perform_autofin
-        p "!!!!!!!!!!perform_autofin"
         if autofin
           self.finalized_at = Time.now
           if defined?(Extface) && fiscalizable? && device = origin.try(:fiscal_device)
             #self.extface_job = origin.fiscal_device.driver.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
             self.extface_job = device.jobs.new
+            self.perform_fiscalize = true
           end
           if defined?(Extface) && printable? && print_device = origin.try(:print_device)
             #self.extface_job = origin.fiscal_device.driver.fiscalize(self) if fiscalizable? && origin.try(:fiscal_device)
             self.print_job = print_device.jobs.new
+            self.perform_print = true
           end
         end
         true
       end
       
       def create_fiscal_job
-        if self.extface_job_id_changed? && defined?(Resque) && defined?(Extface) && device = origin.try(:fiscal_device)
-          p "device: #{device.try(:id)}"
-          p "self: #{self.try(:id)}"
-          p "self.finalized_at changed: #{self.finalized_at_changed?}"
-          
+        if @perform_fiscalize && defined?(Resque) && defined?(Extface) && device = origin.try(:fiscal_device)
           Resque.enqueue_to("extface_#{device.id}", Billing::IssueFiscalDoc, self.id)
-        end
+        end if fiscalizable?
         true
       end
 
       def create_print_job
-        if self.print_job_id_changed? && defined?(Resque) && defined?(Extface) && print_device = origin.try(:print_device)
-          p "################ vprint device: #{print_device.try(:id)}"
-          p "self: #{self.try(:id)}"
+        if @perform_print && defined?(Resque) && defined?(Extface) && print_device = origin.try(:print_device)
           Resque.enqueue_to("extface_#{print_device.id}", Billing::IssuePrintDoc, self.id)
-        end
+        end if printable?
         true
       end
   end

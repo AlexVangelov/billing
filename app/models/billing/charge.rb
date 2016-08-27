@@ -21,7 +21,7 @@ module Billing
     validates_presence_of :price
     validates_numericality_of :value, greater_than_or_equal_to: 0
     
-    after_initialize do
+    after_initialize on: :create do
       self.value = price #unless modifier.present? #bill validation will update modified value
     end
     
