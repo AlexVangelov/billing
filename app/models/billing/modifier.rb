@@ -1,7 +1,7 @@
 module Billing
   class Modifier < ActiveRecord::Base
     include BillItem
-    belongs_to :bill, inverse_of: :modifiers, validate: true
+    belongs_to :bill, inverse_of: :modifiers#, validate: true
     belongs_to :charge, inverse_of: :modifier
     monetize :fixed_value_cents
     

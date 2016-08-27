@@ -9,6 +9,8 @@ module Billing
       delegate :save, to: :bill, prefix: :bill
       delegate :origins, :payment_types, :tax_groups, to: :bill
       
+      validates_presence_of :bill
+      
       after_save :bill_save
       after_destroy :bill_save
     end
