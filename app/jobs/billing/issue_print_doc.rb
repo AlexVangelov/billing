@@ -30,7 +30,7 @@ module Billing
         
         bill.charges.each do |charge|
           text = "#{charge.qty ? charge.qty : 1} x #{charge.name}"
-          s.print "\r\n#{text.ljust(22)} #{charge.price.to_s.rjust(7)}\r\n"
+          s.print "\r\n#{text.truncate(22).ljust(22)} #{charge.price.to_s.rjust(7)}\r\n"
           if charge.description
             s.print "#{charge.description.truncate(30)}\r\n"
           end
