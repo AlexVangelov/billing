@@ -132,9 +132,14 @@ module Billing
       def calculate_modifiers
         charges_a = charges.to_a
         @modifier_items = ModifierItems.new.tap() do |items|
-          modifiers.select{ |m| m.charge.present? }.each do |charge_modifier|
-            charge = charges_a.find{ |c| c == charge_modifier.charge }
-            mod_value = charge_modifier.percent_ratio.nil? ? charge_modifier.fixed_value : (charge_modifier.charge.price * charge_modifier.percent_ratio)
+          # modifiers.select{ |m| m.charge.present? }.each do |charge_modifier|
+          #   charge = charges_a.find{ |c| c == charge_modifier.charge }
+          #   mod_value = charge_modifier.percent_ratio.nil? ? charge_modifier.fixed_value : (charge_modifier.charge.price * charge_modifier.percent_ratio)
+          #   charge.value = charge.price + mod_value
+          #   items << Charge.new(price: mod_value, chargable: charge)
+          # end
+          charges_a.select{ |c| c.modifier.present? }.each do |charge|
+            mod_value = charge.modifier.percent_ratio.nil? ? charge.modifier.fixed_value : (charge.modifier.charge.price * charge.modifier.percent_ratio)
             charge.value = charge.price + mod_value
             items << Charge.new(price: mod_value, chargable: charge)
           end

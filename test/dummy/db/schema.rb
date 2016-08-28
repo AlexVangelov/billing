@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150512040421) do
+ActiveRecord::Schema.define(version: 20160824235224) do
 
   create_table "billing_bills", force: :cascade do |t|
     t.integer  "billable_id"
@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 20150512040421) do
     t.string   "name",                    limit: 255
     t.string   "number",                  limit: 255
     t.datetime "deleted_at"
+    t.integer  "print_job_id"
   end
 
   add_index "billing_bills", ["billable_id", "billable_type"], name: "index_billing_bills_on_billable_id_and_billable_type"
@@ -134,6 +135,9 @@ ActiveRecord::Schema.define(version: 20150512040421) do
     t.string   "type",               limit: 255
     t.string   "payment_model",      limit: 255, default: "Billing::PaymentWithType"
     t.integer  "transfer_device_id"
+    t.integer  "print_device_id"
+    t.string   "print_header"
+    t.string   "print_footer"
   end
 
   add_index "billing_origins", ["deleted_at"], name: "index_billing_origins_on_deleted_at"

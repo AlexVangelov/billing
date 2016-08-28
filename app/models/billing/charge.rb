@@ -21,8 +21,8 @@ module Billing
     validates_presence_of :price
     validates_numericality_of :value, greater_than_or_equal_to: 0
     
-    after_initialize on: :create do
-      self.value = price #unless modifier.present? #bill validation will update modified value
+    after_initialize do
+      self.value = price if self.new_record? #unless modifier.present? #bill validation will update modified value
     end
     
     def find_tax_group_mapping_for(fiscal_driver) # optimize and remove me!

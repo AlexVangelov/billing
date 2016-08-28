@@ -29,15 +29,32 @@ module Billing
         s.print "\r\n------------------------------\r\n"
         
         bill.charges.each do |charge|
-          s.print "#{charge.name.ljust(22)} #{charge.value.to_s.rjust(7)}\r\n"
+          text = "#{charge.qty ? charge.qty : 1} x #{charge.name}"
+          s.print "\r\n#{text.ljust(22)} #{charge.price.to_s.rjust(7)}\r\n"
+          if charge.description
+            s.print "#{charge.description.truncate(30)}\r\n"
+          end
           if charge.modifier.present?
-            s.print "  Item modifier:     #{charge.modifier.human.to_s.rjust(7)}\r\n"
+            text = charge.modifier.percent_ratio.nil? ? "" : " #{charge.modifier.percentage}"
+            if charge.modifier.positive?
+              text += " Surcharge"
+            else
+              text += " Discount"
+            end
+            s.print "#{text.ljust(22)} #{(charge.value - charge.price).to_s.rjust(7)}\r\n"
           end
         end
-        if bill.modifiers.any?
-          s.print "  Global modifier:   #{bill.global_modifier_value.to_s.rjust(7)}\r\n"
-        end
         s.print "-----------\r\n".rjust(32)
+        if bill.modifiers.global.any?
+          global_modifier = bill.modifiers.global.first
+          text = global_modifier.percent_ratio.nil? ? "" : " #{global_modifier.percentage}"
+          if global_modifier.positive?
+            text += " Surcharge"
+          else
+            text += " Discount"
+          end
+          s.print "#{text.ljust(22)} #{bill.global_modifier_value.to_s.rjust(7)}\r\n"
+        end
         s.print "TOTAL:    #{bill.total.to_s.rjust(20)}\r\n"
         
         # s.print "..............................\r\n"
