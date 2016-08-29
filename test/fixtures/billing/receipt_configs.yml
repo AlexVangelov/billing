@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  master_id: 1
+  type: 
+  name: MyString
+  discount_text: MyString
+  surcharge_text: MyString
+  sound_signal: false
+  open_cash_drawer: false
+
+two:
+  master_id: 1
+  type: 
+  name: MyString
+  discount_text: MyString
+  surcharge_text: MyString
+  sound_signal: false
+  open_cash_drawer: false

@@ -32,14 +32,14 @@ module Billing
           text = "#{charge.qty ? charge.qty : 1} x #{charge.name}"
           s.print "\r\n#{text.truncate(22).ljust(22)} #{charge.price.to_s.rjust(7)}\r\n"
           if charge.description
-            s.print "#{charge.description.truncate(30)}\r\n"
+            s.print "#{charge.description.truncate(26)}\r\n"
           end
           if charge.modifier.present?
             text = charge.modifier.percent_ratio.nil? ? "" : " #{charge.modifier.percentage}"
             if charge.modifier.positive?
-              text += " Surcharge"
+              text += " #{ bill.origin.receipt_config ? bill.origin.receipt_config.surcharge_text || 'Surcharge' : 'Surcharge' }"
             else
-              text += " Discount"
+              text += " #{ bill.origin.receipt_config ? bill.origin.receipt_config.discount_text || 'Discount' : 'Discount' }"
             end
             s.print "#{text.ljust(22)} #{(charge.value - charge.price).to_s.rjust(7)}\r\n"
           end
@@ -49,9 +49,9 @@ module Billing
           global_modifier = bill.modifiers.global.first
           text = global_modifier.percent_ratio.nil? ? "" : " #{global_modifier.percentage}"
           if global_modifier.positive?
-            text += " Surcharge"
+            text += " #{ bill.origin.receipt_config ? bill.origin.receipt_config.surcharge_text || 'Surcharge' : 'Surcharge' }"
           else
-            text += " Discount"
+            text += " #{ bill.origin.receipt_config ? bill.origin.receipt_config.discount_text || 'Discount' : 'Discount' }"
           end
           s.print "#{text.ljust(22)} #{bill.global_modifier_value.to_s.rjust(7)}\r\n"
         end
