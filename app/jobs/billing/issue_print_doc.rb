@@ -25,7 +25,7 @@ module Billing
         
         s.print bill.origin.print_header
         s.print "\r\n            ******            \r\n"
-        s.print "#{bill.name}".truncate(30)
+        s.print bill.name
         s.print "\r\n------------------------------\r\n"
         
         bill.charges.each do |charge|
