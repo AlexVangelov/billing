@@ -38,8 +38,8 @@ module Resque
       end
 
       def reenqueue(*args)
-        #Resque.enqueue_to(redis_key(*args), self, *args)
-        Resque.redis.lpush("queue:#{Resque.queue_from_class(self)}", Resque.encode(class: self, args: args))
+        Resque.enqueue_to(redis_key(*args), self, *args)
+        #Resque.redis.lpush("queue:#{Resque.queue_from_class(self)}", Resque.encode(class: self, args: args))
       end
 
       def before_perform(*args)
