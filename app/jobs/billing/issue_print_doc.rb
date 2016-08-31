@@ -62,7 +62,9 @@ module Billing
         s.print_fill_row "-"
         s.print_edges_row bill.number, Time.now.strftime("%Y-%d-%m %T")
         s.print "\r\n\r\n\r\n"
-        s.try :autocut
+        s.try :autocut if bill.origin.receipt_config.try(:paper_cut)
+        s.try :beep if bill.origin.receipt_config.try(:sound_signal)
+        s.try :pulse if bill.origin.receipt_config.try(:open_cash_drawer)
         s.notify "Print Doc End"
       end
     rescue Resque::TermException
