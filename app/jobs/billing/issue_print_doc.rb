@@ -22,17 +22,17 @@ module Billing
       bill.print_job.runtime do |s|
         return unless bill.printable?
         s.notify "Print Doc Start"
+
+        s.print "#{bill.origin.print_header}\r\n"
+        s.print_center_row "******"
+        s.print "#{bill.name}\r\n"
+        s.print_fill_row "-"
         
-        s.print bill.origin.print_header
-        s.print "\r\n            ******            \r\n"
-        s.print bill.name
-        s.print "\r\n------------------------------\r\n"
-        
-        bill.charges.each do |charge|
-          text = "#{charge.qty ? charge.qty : 1} x #{charge.name}"
-          s.print "\r\n#{text.truncate(22).ljust(22)} #{charge.price.to_s.rjust(7)}\r\n"
+        bill.charges.each_with_index do |charge, index|
+          s.print "\r\n" unless index == 0
+          s.print_text_price_row "#{charge.qty ? charge.qty : 1} x #{charge.name}", charge.price
           if charge.description
-            s.print "#{charge.description.truncate(26)}\r\n"
+            s.print_ljust_row charge.description, ' ', 4
           end
           if charge.modifier.present?
             text = charge.modifier.percent_ratio.nil? ? "" : " #{charge.modifier.percentage}"
@@ -41,10 +41,10 @@ module Billing
             else
               text += " #{ bill.origin.receipt_config ? bill.origin.receipt_config.discount_text || 'Discount' : 'Discount' }"
             end
-            s.print "#{text.ljust(22)} #{(charge.value - charge.price).to_s.rjust(7)}\r\n"
+            s.print_text_price_row text, (charge.value - charge.price)
           end
         end
-        s.print "-----------\r\n".rjust(32)
+        s.print_rjust_row "-----------"
         if bill.modifiers.global.any?
           global_modifier = bill.modifiers.global.first
           text = global_modifier.percent_ratio.nil? ? "" : " #{global_modifier.percentage}"
@@ -53,20 +53,16 @@ module Billing
           else
             text += " #{ bill.origin.receipt_config ? bill.origin.receipt_config.discount_text || 'Discount' : 'Discount' }"
           end
-          s.print "#{text.ljust(22)} #{bill.global_modifier_value.to_s.rjust(7)}\r\n"
+          s.print_text_price_row text, bill.global_modifier_value
         end
-        s.print "TOTAL:    #{bill.total.to_s.rjust(20)}\r\n"
-        
-        # s.print "..............................\r\n"
-        # bill.payments.each do |payment|
-          # s.print "#{payment.payment_type.name.humanize}\r\n"
-        # end
+        s.print_text_price_row "TOTAL:", bill.total
 
-        s.print "            ******            \r\n"
-        s.print bill.origin.print_footer
-        s.print "\r\n------------------------------\r\n"
-        s.print Time.now.strftime("Printed on %m/%d/%Y %T\r\n").rjust(32)
+        s.print_center_row "******"
+        s.print "#{bill.origin.print_footer}\r\n"
+        s.print_fill_row "-"
+        s.print_edges_row bill.number, Time.now.strftime("%Y-%d-%m %T")
         s.print "\r\n\r\n\r\n"
+        s.try :autocut
         s.notify "Print Doc End"
       end
     rescue Resque::TermException
