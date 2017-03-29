@@ -9,12 +9,12 @@ module Billing
     end
     
     test "summaries" do
-      assert_equal '4 USD'.to_money, @bill.charges_sum
-      assert_equal '5 USD'.to_money, @bill.surcharges_sum
+      assert_equal '3 USD'.to_money, @bill.charges_sum
+      assert_equal '3 USD'.to_money, @bill.surcharges_sum
       assert_equal '0 USD'.to_money, @bill.discounts_sum
       assert_equal '3 USD'.to_money, @bill.payments_sum
-      assert_equal '8 USD'.to_money, @bill.total
-      assert_equal '-5 USD'.to_money, @bill.balance
+      assert_equal '6 USD'.to_money, @bill.total
+      assert_equal '-3 USD'.to_money, @bill.balance
     end
     
     test "charge" do
@@ -23,7 +23,7 @@ module Billing
         assert @bill.save!
       end
       assert charge.persisted?
-      assert_equal '14 USD'.to_money, @bill.total # ((1+1) + 2 + 3) + 100%
+      assert_equal '12 USD'.to_money, @bill.total
     end
    
     test "discount" do

@@ -5,7 +5,7 @@ module Billing
     delegate :fiscal?, :cash?, to: :payment_type, allow_nil: true
     
     validates_presence_of :payment_type
-    validates :payment_type, inclusion: { in: :payment_types }
+    #validates :payment_type, inclusion: { in: :payment_types }
     
     after_initialize on: :create do
       self.payment_type = default_payment_type unless payment_type
