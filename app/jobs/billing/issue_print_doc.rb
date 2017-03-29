@@ -65,7 +65,7 @@ module Billing
         s.try :autocut if bill.origin.receipt_config.try(:paper_cut)
         s.try :beep if bill.origin.receipt_config.try(:sound_signal)
         s.try :pulse if bill.origin.receipt_config.try(:open_cash_drawer)
-        if bill.origin.receipt_config.try(:custom_commands) && cmd = s.push bill.origin.receipt_config.try(:custom_commands_text)
+        if bill.origin.receipt_config.try(:custom_commands) && cmd = bill.origin.receipt_config.try(:custom_commands_text)
           s.push(cmd.b.gsub(/../){ |pair| pair.hex.chr })
         end
         s.notify "Print Doc End"
