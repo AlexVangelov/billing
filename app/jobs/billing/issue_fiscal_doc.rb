@@ -41,7 +41,7 @@ module Billing
                   text1: charge.name,
                   text2: charge.description,
                   tax_group: charge.find_tax_group_mapping_for(s), #find tax group mapping by ratio , not nice
-                  qty: charge.qty,
+                  qty: charge.qty.try(:to_f),
                   neto: neto,
                   percent_ratio: percent_ratio #TODO check format
                 )
