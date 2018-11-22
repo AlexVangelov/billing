@@ -22,7 +22,7 @@ module Billing
     validates_numericality_of :value, greater_than_or_equal_to: 0
     
     after_initialize do
-      self.value = price if self.new_record? #unless modifier.present? #bill validation will update modified value
+      self.value = qtyprice if self.new_record? #unless modifier.present? #bill validation will update modified value
     end
     
     def qtyprice
