@@ -30,7 +30,7 @@ module Billing
         
         bill.charges.each_with_index do |charge, index|
           s.print "\r\n" unless index == 0
-          s.print_text_price_row "#{charge.qty ? charge.qty : 1} x #{charge.name}", charge.price
+          s.print_text_price_row "#{charge.qty ? charge.qty : 1} x #{charge.name}", charge.qtyprice
           if charge.description
             s.print_ljust_row charge.description, ' ', 4
           end
@@ -41,7 +41,7 @@ module Billing
             else
               text += " #{ bill.origin.receipt_config ? bill.origin.receipt_config.discount_text || 'Discount' : 'Discount' }"
             end
-            s.print_text_price_row text, (charge.value - charge.price)
+            s.print_text_price_row text, (charge.value - charge.qtyprice)
           end
         end
         s.print_rjust_row "-----------"

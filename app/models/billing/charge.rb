@@ -25,6 +25,10 @@ module Billing
       self.value = price if self.new_record? #unless modifier.present? #bill validation will update modified value
     end
     
+    def qtyprice
+      (qty || 1) * price
+    end
+    
     def find_tax_group_mapping_for(fiscal_driver) # optimize and remove me!
       if tax_groups.present? && fiscal_driver.fiscal? #if billable provides tax groups (delegate)
         tax_group = tax_groups.find_by(percent_ratio: tax_ratio)

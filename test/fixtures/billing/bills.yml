@@ -11,3 +11,7 @@ one:
 two:
   billable: one(Profile)
   origin:
+
+open:
+  billable: one(Profile)
+  origin: one

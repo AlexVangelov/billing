@@ -28,28 +28,37 @@ module Billing
    
     test "discount" do
       discount = @bill.modify(-1.00, charge: billing_charges(:two))
-      c = billing_charges(:two)
+      #c = billing_charges(:two)
       assert_difference "@bill.modifiers.count" do
         assert @bill.save
       end
       assert discount.try(:persisted?)
-      p @bill.discounts_sum
-      p @bill.surcharges_sum
       assert_equal '6 USD'.to_money, @bill.total  # ((1+1) + (2-1)) + 100%
     end
-=begin
+
     test "surcharge" do
       surcharge = @bill.modify(1.00, charge: billing_charges(:two))
+      assert_difference "@bill.modifiers.count" do
+        assert @bill.save
+      end
       assert surcharge.try(:persisted?)
-      assert_equal '8 USD'.to_money, @bill.total
+      assert_equal '6 USD'.to_money, @bill.total
     end
     
-    test "pay" do
-      payment = @bill.pay billing_payment_types(:one)
-      assert @bill.balance.zero?, @bill.errors.full_messages.join(', ')
-      assert_equal '7 USD'.to_money, @bill.payments_sum
+    test "pay with qty" do
+      @bill = billing_bills(:open)
+      @bill.charge qty: 1.5, price: 10
+      assert_difference "@bill.charges.count" do
+        assert @bill.save
+      end
+      payment = @bill.pay type: 'Billing::PaymentWithType', payment_type: billing_payment_types(:cash)
+      assert_difference "@bill.payments.count" do
+        assert @bill.save
+      end
+      assert @bill.balance.zero?
+      assert_equal '15 USD'.to_money, @bill.payments_sum
     end
-    
+=begin    
     test "validate positive total" do
       assert @bill.save
       @bill.modify(-500)
