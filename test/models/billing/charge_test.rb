@@ -20,5 +20,11 @@ module Billing
       assert_equal charge.name, 'Umbrella'
       #p charge
     end
+    
+    test "qty" do
+      charge = Billing::Charge.new price: 0.95, qty: 2.0
+      assert_equal charge.price, '0.95'.to_money
+      assert_equal charge.qtyprice, '1.90'.to_money
+    end
   end
 end

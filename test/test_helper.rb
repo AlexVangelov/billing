@@ -30,7 +30,7 @@ module Billing
         parameters = { profile_id: profiles(:one) }.merge(parameters || {})
         process_without_profile(action, http_method, parameters, session, flash)
       end
-      alias_method_chain :process, :profile
+      #alias_method_chain :process, :profile
     end
   end
   class ActionDispatch::Routing::RouteSet

@@ -53,15 +53,15 @@ module Billing
       :payments_of_diff_fiscalization?, :multiple_cash_payments?, if: :has_payments?
     
     def charge(*args)
-      charges.wild *args
+      charges.wild(*args)
     end
     
     def modify(*args)
-      modifiers.wild *args
+      modifiers.wild(*args)
     end
     
     def pay(*args)
-      payments.wild *args
+      payments.wild(*args)
     end
     
     def modifier_items
@@ -126,7 +126,7 @@ module Billing
     end
     
     def printable?
-      origin.print_device.present?
+      origin.print_device_id.present?
     end
 
     private
@@ -140,8 +140,8 @@ module Billing
           #   items << Charge.new(price: mod_value, chargable: charge)
           # end
           charges_a.select{ |c| c.modifier.present? }.each do |charge|
-            mod_value = charge.modifier.percent_ratio.nil? ? charge.modifier.fixed_value : (charge.modifier.charge.price * charge.modifier.percent_ratio)
-            charge.value = charge.price + mod_value
+            mod_value = charge.modifier.percent_ratio.nil? ? charge.modifier.fixed_value : (charge.modifier.charge.qtyprice * charge.modifier.percent_ratio)
+            charge.value = charge.qtyprice + mod_value
             items << Charge.new(price: mod_value, chargable: charge)
           end
           modifiers.select{ |m| m.charge.nil? }.each do |global_modifier|
@@ -151,11 +151,11 @@ module Billing
       end
       def update_sumaries
         calculate_modifiers
-        self.charges_sum = charges.to_a.sum(0.to_money, &:price).to_money
+        self.charges_sum = charges.to_a.sum(0.to_money, &:qtyprice).to_money
         self.discounts_sum = @modifier_items.discounts.sum(0.to_money, &:price).to_money
         self.surcharges_sum = @modifier_items.surcharges.sum(0.to_money, &:price).to_money
         self.payments_sum = payments.to_a.sum(0.to_money, &:value).to_money
-        self.total = charges.to_a.sum(0.to_money, &:price) + surcharges_sum + discounts_sum
+        self.total = charges_sum + surcharges_sum + discounts_sum
         self.balance = payments_sum - total
       end
       
