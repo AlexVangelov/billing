@@ -50,7 +50,7 @@ module Billing
           end
           if global_modifier_value = bill.global_modifier_value
             s.notify "Register Global Modifier"
-            s.add_total_modifier global_modifier_value.to_f 
+            s.add_total_modifier global_modifier_value.to_f, global_modifier.percent_ratio.try(:to_f)
           end
           s.notify "Register Payment"
           bill.payments.each do |payment|
